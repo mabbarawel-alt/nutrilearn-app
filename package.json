@@ -1,0 +1,24 @@
+{
+  "name": "nutrilearn-app",
+  "version": "1.0.0",
+  "description": "NutriLearn - E-learning and Malnutrition Surveillance Mobile App for Parents, Health Workers, and Public Health Supervisors",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8080",
+    "build": "echo 'Web assets ready for APK packaging'",
+    "cap:sync": "npx cap sync android",
+    "cap:open": "npx cap open android",
+    "cap:build": "npx cap build android"
+  },
+  "keywords": [
+    "nutrition",
+    "health",
+    "e-learning",
+    "malnutrition",
+    "chw",
+    "android",
+    "apk"
+  ],
+  "author": "NutriLearn Team",
+  "license": "MIT"
+}
