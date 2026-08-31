@@ -1,21 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fil">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#0f766e">
-  <meta name="description" content="NutriLearn - E-learning and Malnutrition Surveillance Application for Parents and Community Health Workers">
-  <title>NutriLearn - Child Nutrition & Malnutrition Surveillance</title>
+  <meta name="description"
+    content="NutriLearn Calabanga - Plataporma sa Nutrisyon ng Bata at Pagsubaybay sa Malnutrisyon para sa Bayan ng Calabanga at Barangay Paolbo">
+  <title>NutriLearn Calabanga - Barangay Paolbo</title>
 
-  <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
+  <!-- Google Fonts: Lora, Outfit & Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
 
-  <!-- App Icon & Stylesheet -->
-  <link rel="icon" type="image/jpeg" href="assets/icon.jpg">
+  <!-- App Stylesheet -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
 
   <!-- Mobile Viewport Container -->
@@ -26,44 +31,30 @@
 
     <!-- 2. MAIN APPLICATION SHELL (Shown when logged in) -->
     <div id="main-app-layout" style="display:none; flex-direction:column; flex:1;">
-      
+
       <!-- App Header -->
       <header class="app-header">
         <div class="header-top">
           <div class="brand-badge">
-            <img src="assets/icon.jpg" alt="NutriLearn Logo" style="width:36px; height:36px; border-radius:10px; object-fit:cover; border:1px solid rgba(255,255,255,0.4); box-shadow:0 2px 6px rgba(0,0,0,0.15);">
             <div class="brand-text">
-              <h1 id="header-portal-title">NutriLearn</h1>
-              <span id="header-portal-subtitle">Child Nutrition & Surveillance</span>
+              <h1 id="header-portal-title">NutriLearn Calabanga</h1>
+              <span id="header-portal-subtitle">Bayan ng Calabanga • Barangay Paolbo</span>
             </div>
           </div>
 
           <div class="header-actions">
             <!-- Child Switcher (Only visible for parents with multiple children) -->
-            <button id="btn-child-switcher" class="btn-icon" title="Switch Child Profile" onclick="window.app.openChildSwitcher()" style="display:none;">
-              👶
+            <button id="btn-child-switcher" class="header-action-btn btn-switcher-pill"
+              title="Palitan ang Profile ng Bata" onclick="window.app.openChildSwitcher()" style="display:none;">
+              Palitan
             </button>
-            <button class="btn-icon" title="Settings & Info" onclick="window.app.openSettings()">
-              ⚙️
+            <button class="header-action-btn btn-setting-pill" title="Mga Setting" onclick="window.app.openSettings()">
+              Setting
             </button>
-            <button class="btn-icon btn-icon-logout" title="Log Out / Switch Account" onclick="window.app.logout()">
-              🚪
+            <button class="header-action-btn btn-logout-pill" title="Lumabas sa Account" onclick="window.app.logout()">
+              Lumabas
             </button>
           </div>
-        </div>
-
-        <!-- User Identity Strip inside Header -->
-        <div class="user-profile-strip" id="user-profile-strip">
-          <div class="user-strip-info">
-            <span class="user-strip-avatar" id="user-strip-avatar">👩</span>
-            <div>
-              <div class="user-strip-name" id="user-strip-name">Elena Reyes</div>
-              <div class="user-strip-detail" id="user-strip-detail">Parent of Baby Maya • Barangay San Isidro</div>
-            </div>
-          </div>
-          <button class="btn-logout-chip" onclick="window.app.logout()">
-            Switch User
-          </button>
         </div>
       </header>
 
@@ -71,11 +62,12 @@
       <div class="status-strip">
         <div class="status-online" id="network-status-text">
           <span class="dot-pulse"></span>
-          <span>Offline Ready • Local Database Active</span>
+          <span>Handa kahit Offline • Lokal na Database</span>
         </div>
-        <div style="cursor:pointer;" onclick="window.app.showToast('Synchronized with Community Health Cloud ☁️', 'success')">
-          🔄 Sync
-        </div>
+        <button class="status-sync-btn"
+          onclick="window.app.showToast('Nai-sync sa Tanggapan ng Kalusugan ng Calabanga', 'success')">
+          I-sync
+        </button>
       </div>
 
       <!-- Main Content Views -->
@@ -83,11 +75,19 @@
         <!-- 1. Parent & Caregiver View -->
         <section id="parent-view" style="display:none;"></section>
 
-        <!-- 2. Community Health Worker View -->
+        <!-- 2. Barangay Health Worker View -->
         <section id="chw-view" style="display:none;"></section>
 
         <!-- 3. Supervisor & Public Health Surveillance View -->
         <section id="supervisor-view" style="display:none;"></section>
+
+        <!-- Developer Credits Footer -->
+        <footer
+          style="text-align:center; padding:16px 12px 24px 12px; font-size:0.72rem; color:var(--text-muted); border-top:1px solid #e2e8f0; margin-top:20px;">
+          <div>NutriLearn • Bayan ng Calabanga at Barangay Paolbo</div>
+          <div style="margin-top:2px;">Credits to the Owner • Developer: <strong
+              style="color:var(--primary); font-weight:800;">NEXORA</strong></div>
+        </footer>
       </main>
 
       <!-- Role-Specific Bottom Navigation Bar -->
@@ -103,7 +103,8 @@
   <div class="modal-overlay" id="app-modal" onclick="if(event.target === this) window.app.closeModal();">
     <div class="modal-card">
       <div class="modal-header">
-        <div style="font-size:0.75rem; font-weight:700; color:var(--primary); text-transform:uppercase;">NutriLearn Mobile</div>
+        <div style="font-size:0.75rem; font-weight:700; color:var(--primary); text-transform:uppercase;">NutriLearn
+          Calabanga • Barangay Paolbo</div>
         <button class="modal-close" onclick="window.app.closeModal()">✕</button>
       </div>
       <div id="modal-content-area"></div>
@@ -121,4 +122,5 @@
   <script src="js/app.js"></script>
 
 </body>
+
 </html>

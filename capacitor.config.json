@@ -1,6 +1,6 @@
 {
-  "appId": "org.nutrilearn.app",
-  "appName": "NutriLearn",
+  "appId": "org.nutrilearn.calabanga",
+  "appName": "NutriLearn Calabanga",
   "webDir": ".",
   "bundledWebRuntime": false,
   "server": {

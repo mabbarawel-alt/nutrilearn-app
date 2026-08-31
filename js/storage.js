@@ -1,5 +1,6 @@
 /**
- * NutriLearn - Offline-First Local Storage Engine & Seed Data
+ * NutriLearn Calabanga - Offline-First Local Storage Engine & Seed Data
+ * Lokal na Database para sa Bayan ng Calabanga at Barangay Paolbo
  */
 
 const STORAGE_KEYS = {
@@ -11,476 +12,329 @@ const STORAGE_KEYS = {
   DAILY_LOGS: 'nutrilearn_daily_logs',
   VISITS: 'nutrilearn_visits',
   REPORTS: 'nutrilearn_reports',
+  MESSAGES: 'nutrilearn_messages',
+  SCHEDULES: 'nutrilearn_schedules',
+  ANNOUNCEMENTS: 'nutrilearn_announcements',
   CURRENT_USER_ROLE: 'nutrilearn_role',
   SELECTED_CHILD_ID: 'nutrilearn_selected_child'
 };
 
-// Initial Seed Users with Passwords
-const INITIAL_USERS = [
+// Global Helper para sa Format ng Edad (Taon at Buwan)
+window.formatChildAge = function(age) {
+  let months = typeof age === 'object' && age !== null ? (age.ageMonths || 0) : parseInt(age) || 0;
+  const years = Math.floor(months / 12);
+  const remMonths = months % 12;
+
+  if (years > 0 && remMonths > 0) {
+    return `${years} Taon, ${remMonths} Buwan`;
+  } else if (years > 0) {
+    return `${years} Taon`;
+  } else {
+    return `${months} Buwan`;
+  }
+};
+
+// Initial Clean Slate: Magsisimula sa rehistrasyon at sign-in
+const INITIAL_USERS = [];
+const INITIAL_CHILDREN = [];
+
+// Mga Opisyal na Anunsyo ng BHW para sa mga Magulang sa Barangay Paolbo
+const INITIAL_ANNOUNCEMENTS = [
   {
-    id: 'user-parent-1',
-    name: 'Elena Reyes',
-    username: 'elena',
-    password: 'password123',
-    role: 'parent',
-    phone: '0917-555-0192',
-    community: 'Barangay San Isidro',
-    childIds: ['child-001'],
-    avatar: '👩',
-    bio: 'Mother of Baby Maya (14 mos)'
+    id: 'ann-1',
+    title: 'Libreng Pamamahagi ng Bitamina at Micronutrient Powder',
+    message: 'Mga minamahal na magulang sa Barangay Paolbo, may darating pong libreng suplay ng Vitamin A capsules at Micronutrient Powder sa darating na Biyernes sa Barangay Health Center (8:00 AM - 12:00 PM). Dalhin po ang inyong Nutrition Monitoring Booklet.',
+    authorName: 'Barangay Health Worker (BHW)',
+    authorRole: 'chw',
+    date: '2026-08-30',
+    category: 'Bitamina & Suplemento',
+    priority: 'high'
   },
   {
-    id: 'user-parent-2',
-    name: 'Rosa Navarro',
-    username: 'rosa',
-    password: 'password123',
-    role: 'parent',
-    phone: '0928-555-4819',
-    community: 'Barangay Poblacion West',
-    childIds: ['child-002'],
-    avatar: '👩‍🦰',
-    bio: 'Mother of Leo (20 mos)'
-  },
-  {
-    id: 'user-parent-3',
-    name: 'Grace Alcantara',
-    username: 'grace',
-    password: 'password123',
-    role: 'parent',
-    phone: '0919-555-8321',
-    community: 'Barangay San Isidro',
-    childIds: ['child-003'],
-    avatar: '👱‍♀️',
-    bio: 'Mother of Sofia (18 mos)'
-  },
-  {
-    id: 'user-parent-4',
-    name: 'Clarissa Gabriel',
-    username: 'clarissa',
-    password: 'password123',
-    role: 'parent',
-    phone: '0945-555-9011',
-    community: 'Barangay Malaya',
-    childIds: ['child-004'],
-    avatar: '👩‍🦳',
-    bio: 'Mother of Ethan (10 mos)'
-  },
-  {
-    id: 'user-chw-1',
-    name: 'Maria Santos',
-    username: 'maria.chw',
-    password: 'chwpassword123',
-    role: 'chw',
-    title: 'Community Health Worker #12',
-    phone: '0918-123-4567',
-    community: 'San Isidro & Poblacion West',
-    avatar: '🩺',
-    bio: 'Assigned CHW for 14 active households'
-  },
-  {
-    id: 'user-chw-2',
-    name: 'Danilo Cruz',
-    username: 'danilo.chw',
-    password: 'chwpassword123',
-    role: 'chw',
-    title: 'Community Health Worker #08',
-    phone: '0920-765-4321',
-    community: 'Barangay Malaya',
-    avatar: '🩺',
-    bio: 'Assigned CHW for 10 active households'
-  },
-  {
-    id: 'user-chw-3',
-    name: 'Dr. Evelyn Morales',
-    username: 'evelyn.mho',
-    password: 'supervisor123',
-    role: 'supervisor',
-    title: 'Nutrition Officer & Supervisor',
-    phone: '0999-888-7766',
-    community: 'District Health Office',
-    avatar: '📊',
-    bio: 'Public Health Malnutrition Surveillance Officer'
+    id: 'ann-2',
+    title: 'BHW Community Feeding & 4-Star Cooking Demo',
+    message: 'Magkakaroon po ng libreng pagpapakain (lugaw na may itlog, monggo, at malunggay) at live cooking demonstration para sa mga magulang ng mga batang 6 hanggang 59 buwang gulang sa Zone 1 Multi-Purpose Hall.',
+    authorName: 'BHW Paolbo Team',
+    authorRole: 'chw',
+    date: '2026-08-28',
+    category: 'Feeding & Demo',
+    priority: 'normal'
   }
 ];
 
-// Initial Seed Data
-const INITIAL_CHILDREN = [
-  {
-    id: 'child-001',
-    parentId: 'user-parent-1',
-    name: 'Baby Maya Reyes',
-    ageMonths: 14,
-    gender: 'Female',
-    parentName: 'Elena Reyes',
-    parentContact: '0917-555-0192',
-    community: 'Barangay San Isidro',
-    chwAssigned: 'Maria Santos (CHW #12)',
-    status: 'MAM', // SAM, MAM, IMPROVING, RECOVERED
-    initialMuac: 118, // mm (Yellow MAM)
-    currentMuac: 122,
-    initialWeight: 6.8, // kg
-    currentWeight: 7.4,
-    height: 72.0, // cm
-    edema: false,
-    admissionDate: '2026-07-15',
-    lastVisitDate: '2026-08-20',
-    targetWeight: 8.5,
-    growthHistory: [
-      { date: '2026-07-15', weight: 6.8, muac: 118, status: 'MAM' },
-      { date: '2026-07-28', weight: 7.0, muac: 120, status: 'MAM' },
-      { date: '2026-08-10', weight: 7.2, muac: 121, status: 'IMPROVING' },
-      { date: '2026-08-20', weight: 7.4, muac: 122, status: 'IMPROVING' }
-    ],
-    completedModules: ['mod-1', 'mod-3'],
-    prescribedDiet: 'High-energy 4-Star porridge + Egg daily + Micronutrient Powder (MNP)',
-    notes: 'Mother receptive to counseling. Child gaining weight steadily; appetite improved.'
-  },
-  {
-    id: 'child-002',
-    parentId: 'user-parent-2',
-    name: 'Leo Navarro',
-    ageMonths: 20,
-    gender: 'Male',
-    parentName: 'Rosa Navarro',
-    parentContact: '0928-555-4819',
-    community: 'Barangay Poblacion West',
-    chwAssigned: 'Maria Santos (CHW #12)',
-    status: 'SAM', // Red SAM
-    initialMuac: 112,
-    currentMuac: 114,
-    initialWeight: 7.9,
-    currentWeight: 8.2,
-    height: 80.5,
-    edema: false,
-    admissionDate: '2026-08-01',
-    lastVisitDate: '2026-08-22',
-    targetWeight: 10.2,
-    growthHistory: [
-      { date: '2026-08-01', weight: 7.9, muac: 112, status: 'SAM' },
-      { date: '2026-08-12', weight: 8.0, muac: 113, status: 'SAM' },
-      { date: '2026-08-22', weight: 8.2, muac: 114, status: 'SAM' }
-    ],
-    completedModules: ['mod-1'],
-    prescribedDiet: 'RUTF (Ready-to-Use Therapeutic Food) 2 sachets/day + Safe Boiled Water',
-    notes: 'Monitored weekly for SAM outpatient care. Checked for appetite and absence of complications.'
-  },
-  {
-    id: 'child-003',
-    parentId: 'user-parent-3',
-    name: 'Sofia Alcantara',
-    ageMonths: 18,
-    gender: 'Female',
-    parentName: 'Grace Alcantara',
-    parentContact: '0919-555-8321',
-    community: 'Barangay San Isidro',
-    chwAssigned: 'Danilo Cruz (CHW #08)',
-    status: 'RECOVERED',
-    initialMuac: 119,
-    currentMuac: 130, // Green Normal
-    initialWeight: 7.5,
-    currentWeight: 9.6,
-    height: 78.0,
-    edema: false,
-    admissionDate: '2026-05-10',
-    lastVisitDate: '2026-08-18',
-    targetWeight: 9.2,
-    growthHistory: [
-      { date: '2026-05-10', weight: 7.5, muac: 119, status: 'MAM' },
-      { date: '2026-06-15', weight: 8.3, muac: 123, status: 'IMPROVING' },
-      { date: '2026-07-20', weight: 9.0, muac: 127, status: 'RECOVERED' },
-      { date: '2026-08-18', weight: 9.6, muac: 130, status: 'RECOVERED' }
-    ],
-    completedModules: ['mod-1', 'mod-2', 'mod-3', 'mod-4', 'mod-5'],
-    prescribedDiet: 'Diversified family meals + Continued breastfeeding + Fruit snacks',
-    notes: 'Successfully graduated from supplementary feeding program. Health fully restored.'
-  },
-  {
-    id: 'child-004',
-    parentId: 'user-parent-4',
-    name: 'Ethan Gabriel',
-    ageMonths: 10,
-    gender: 'Male',
-    parentName: 'Clarissa Gabriel',
-    parentContact: '0945-555-9011',
-    community: 'Barangay Malaya',
-    chwAssigned: 'Danilo Cruz (CHW #08)',
-    status: 'MAM',
-    initialMuac: 120,
-    currentMuac: 123,
-    initialWeight: 6.2,
-    currentWeight: 6.9,
-    height: 68.5,
-    edema: false,
-    admissionDate: '2026-08-05',
-    lastVisitDate: '2026-08-25',
-    targetWeight: 7.8,
-    growthHistory: [
-      { date: '2026-08-05', weight: 6.2, muac: 120, status: 'MAM' },
-      { date: '2026-08-25', weight: 6.9, muac: 123, status: 'IMPROVING' }
-    ],
-    completedModules: ['mod-1', 'mod-2'],
-    prescribedDiet: 'Thick enriched porridge (lugaw) with mashed liver/egg yolk + breastmilk on demand',
-    notes: 'Mother introduced complementary feeding early with watery broths. Advised on high-density purees.'
-  }
-];
-
+// Mga Aralin sa Nutrisyon sa Wikang Filipino (Simple & Clean)
 const INITIAL_MODULES = [
   {
     id: 'mod-1',
-    title: 'The 4-Star Diet for Growing Children',
-    category: 'Core Nutrition',
-    duration: '5 min read',
-    icon: '⭐',
-    summary: 'Learn how to combine 4 essential food groups in every meal to prevent and reverse malnutrition.',
+    title: 'Ang 4-Star Diet para sa Lumalaking Bata',
+    category: 'Aralin 1',
+    duration: '5 min',
+    icon: '1',
+    summary: 'Alamin kung paano pagsasamahin ang 4 na mahalagang grupo ng pagkain sa bawat kainan upang maiwasan at malunasan ang malnutrisyon.',
     content: `
-      <h3>Why the 4-Star Diet Matters</h3>
-      <p>Malnutrition happens when a child only eats plain rice, corn, or thin broth. Children need concentrated energy, muscle-building proteins, and protective vitamins in every single bowl.</p>
+      <h3>Bakit Mahalaga ang 4-Star Diet?</h3>
+      <p>Nangyayari ang malnutrisyon kapag ang bata ay puro lamang kanin, sabaw, o biskwit ang kinakain. Ang mga lumalaking bata ay nangangailangan ng siksik na lakas, protinang pampatibay ng kalamnan, at bitaminang panlaban sa sakit sa bawat mangkok ng pagkain.</p>
       
-      <h4>The 4 Essential Food Stars:</h4>
+      <h4>Ang 4 na Grupo ng Masustansyang Pagkain:</h4>
       <ul>
-        <li><strong>Star 1 - Energy Staples:</strong> Rice, oats, corn, sweet potato, cassava (gives active energy).</li>
-        <li><strong>Star 2 - Animal-Source Protein:</strong> Eggs, fish, chicken liver, milk, ground meat (vital for brain & muscle growth).</li>
-        <li><strong>Star 3 - Legumes & Seeds:</strong> Mung beans (monggo), beans, lentils, peanuts, tofu (affordable plant protein).</li>
-        <li><strong>Star 4 - Protective Fruits & Vegetables:</strong> Malunggay (moringa), spinach, pumpkin, papaya, mango (rich in Vitamin A & Iron to fight infections).</li>
+        <li><strong>Bituin 1 - Pagkaing Nagbibigay-Lakas (Go Foods):</strong> Bigas/kanin, mais, kamote, gabi, oatmeal (nagbibigay ng lakas at sigla).</li>
+        <li><strong>Bituin 2 - Protinang mula sa Hayop (Grow Foods):</strong> Itlog, isda, atay ng manok, karne, gatas (mahalaga para sa paglaki ng utak at katawan).</li>
+        <li><strong>Bituin 3 - Monggo, Buto at Legumbres:</strong> Monggo, mani, tokwa, sitaw, beans (abot-kayang protina mula sa halaman).</li>
+        <li><strong>Bituin 4 - Gulay at Prutas na Pananggalang (Glow Foods):</strong> Malunggay, kalabasa, kangkong, hinog na papaya, mangga (mayaman sa Vitamin A at Iron para labanan ang impeksyon).</li>
       </ul>
       
       <div class="callout-box" style="background:#ecfdf5; border-left:4px solid #10b981; padding:10px; margin:12px 0;">
-        <strong>Golden Rule:</strong> Aim for at least 3 to 4 stars in every meal bowl!
+        <strong>Tuntunin:</strong> Sikaping magkaroon ng kahit 3 hanggang 4 na bituin sa bawat plato o mangkok ng inyong anak!
       </div>
     `,
     quiz: {
-      question: 'Which of the following is an example of a complete 4-Star Meal?',
+      question: 'Alin sa mga sumusunod ang halimbawa ng kumpletong 4-Star Meal para sa bata?',
       options: [
-        'Plain white rice with soy sauce and water',
-        'Thick rice porridge with mashed egg yolk, malunggay leaves, and a spoonful of oil',
-        'Sugar-sweetened condensed milk drink only',
-        'Instant noodles soup without egg or vegetables'
+        'Puting kanin na may toyo at kaunting sabaw lamang',
+        'Malapot na lugaw na may dinurog na pula ng itlog, dahon ng malunggay, at isang kutsaritang mantika',
+        'Gatas na condensada na tinubigan lamang',
+        'Instant noodles na walang kasamang itlog o gulay'
       ],
       correctIndex: 1,
-      explanation: 'Thick porridge (Star 1) with egg (Star 2), oil (Energy), and malunggay leaves (Star 4) provides all key growth nutrients!'
+      explanation: 'Ang malapot na lugaw (Star 1) na may itlog (Star 2), mantika (Enerhiya), at malunggay (Star 4) ay nagbibigay ng lahat ng sustansyang kailangan para mabilis na lumakas ang bata!'
     }
   },
   {
     id: 'mod-2',
-    title: 'Complementary Feeding & Food Texture',
-    category: 'Infant Feeding',
-    duration: '6 min read',
-    icon: '🥣',
-    summary: 'Age-appropriate feeding frequency, consistency, and how to avoid watery, low-nutrient broths.',
+    title: 'Wastong Pagpapakain at Lapot ng Pagkain',
+    category: 'Aralin 2',
+    duration: '6 min',
+    icon: '2',
+    summary: 'Ang tamang dalas ng pagpapakain, tamang lapot (texture), at kung paano iiwasan ang malabnaw na sabaw na kulang sa sustansya.',
     content: `
-      <h3>Texture & Frequency Guide (6 to 24 Months)</h3>
-      <p>Children have small stomachs. If their porridge is too thin and watery, their stomach gets full before they get enough calories.</p>
+      <h3>Gabay sa Lapot at Dalas ng Pagpapakain (6 hanggang 24 na Buwan)</h3>
+      <p>Maliit lamang ang tiyan ng bata. Kapag masyadong malabnaw at matubig ang lugaw o pagkain, napupuno agad ang tiyan bago pa makuha ang sapat na sustansya at calories.</p>
       
-      <h4>Age Guidelines:</h4>
+      <h4>Gabay Ayon sa Edad:</h4>
       <ul>
-        <li><strong>6–8 Months:</strong> Thick smooth purees, 2–3 meals/day + Breastfeeding. Consistency: Food stays on the spoon without dripping.</li>
-        <li><strong>9–11 Months:</strong> Finely chopped and mashed foods, 3–4 meals/day + 1 healthy snack.</li>
-        <li><strong>12–23 Months:</strong> Family foods chopped into bite-sized pieces, 3–4 meals/day + 2 nutritious snacks.</li>
+        <li><strong>6–8 Buwang Gulang:</strong> Malapot at pinong puree, 2–3 beses bawat araw + Tuloy na pagpapasuso. Tuntunin: Hindi tumutulo ang pagkain sa kutsara.</li>
+        <li><strong>9–11 Buwang Gulang:</strong> Tadtad at dinurog na pagkain, 3–4 na beses bawat araw + 1 masustansyang meryenda.</li>
+        <li><strong>12–23 Buwang Gulang:</strong> Pagkaing pampamilya na hiniwa sa maliliit na piraso, 3–4 na kainan + 2 masustansyang meryenda.</li>
       </ul>
       
-      <p><strong>The Spoon Test:</strong> Tilt the spoon. If the porridge runs off like water, it is too thin! Thicken it with mashed egg, squash, or peanut paste.</p>
+      <p><strong>Ang Pagsubok sa Kutsara (Spoon Test):</strong> Itagilid ang kutsara na may lugaw. Kung umagos ito na parang tubig, masyado itong malabnaw! Palaputin ito gamit ang dinurog na itlog, kalabasa, o dinurog na mani.</p>
     `,
     quiz: {
-      question: 'How do you know if your baby porridge is energy-dense enough?',
+      question: 'Paano mo malalaman kung sapat ang lapot at enerhiya ng lugaw ng iyong anak?',
       options: [
-        'It is as clear and thin as plain water',
-        'It is thick enough to stay on the spoon without sliding off quickly',
-        'It has extra refined sugar added',
-        'It contains only broth without any solids'
+        'Malinaw at kasing labnaw ito ng purong tubig',
+        'Sapat ang lapot nito upang manatili sa kutsara at hindi madaling tumulo kapag itinagilid',
+        'Nilagyan ito ng maraming asukal',
+        'Purong sabaw lamang ito na walang anumang laman'
       ],
       correctIndex: 1,
-      explanation: 'Dense porridge that clings to the spoon gives the child maximum calories per bite without filling their small stomach with plain water.'
+      explanation: 'Ang malapot na lugaw na nananatili sa kutsara ay nagbibigay ng pinakamataas na sustansya sa bawat subo nang hindi napupuno ang maliit na tiyan ng bata ng purong tubig.'
     }
   },
   {
     id: 'mod-3',
-    title: 'Super-Enriched Porridge (Lugaw) Recipes',
-    category: 'Practical Cooking',
-    duration: '4 min read',
-    icon: '🍲',
-    summary: 'Step-by-step methods to boost ordinary family porridge into a high-calorie recovery meal.',
+    title: 'Mga Masustansyang Reseta ng Super Lugaw',
+    category: 'Aralin 3',
+    duration: '4 min',
+    icon: '3',
+    summary: 'Mga paraan upang gawing siksik sa sustansya at enerhiya ang karaniwang lugaw ng pamilya para sa mabilis na pagbawi ng timbang.',
     content: `
-      <h3>3 Ways to Supercharge Any Porridge:</h3>
+      <h3>3 Madaling Paraan upang Palakasin ang Lugaw:</h3>
       <ol>
-        <li><strong>Add 1 teaspoon of vegetable oil or coconut milk:</strong> Oil doubles the calorie density without making the volume larger!</li>
-        <li><strong>Add a mashed boiled egg yolk or liver:</strong> High in bioavailable iron and protein to fight anemia.</li>
-        <li><strong>Stir in powdered toasted mung beans or peanut paste:</strong> Supercharges zinc and essential amino acids.</li>
+        <li><strong>Magdagdag ng 1 kutsaritang mantika o gata ng niyog:</strong> Dinodoble ng mantika o gata ang enerhiya nang hindi pinapalaki ang dami ng pagkain!</li>
+        <li><strong>Maghalo ng dinurog na nilagang itlog o atay ng manok:</strong> Mayaman sa protina at iron upang labanan ang anemia at panghihina.</li>
+        <li><strong>Ihalo ang pinulbos na sangag na monggo o giniling na mani:</strong> Nagbibigay ng zinc at mahahalagang amino acids para sa mabilis na paglaki.</li>
       </ol>
     `,
     quiz: {
-      question: 'What is the easiest low-cost way to double the calories in a child porridge bowl?',
+      question: 'Ano ang pinakamadali at murang paraan upang madoble ang enerhiya sa mangkok ng lugaw ng bata?',
       options: [
-        'Add a teaspoon of cooking oil or coconut oil',
-        'Add more hot tap water',
-        'Add artificial food coloring',
-        'Give soda instead'
+        'Magdagdag ng isang kutsaritang mantika ng gulay o gata ng niyog',
+        'Magdagdag ng mas maraming mainit na tubig mula sa gripo',
+        'Lagyan ng artipisyal na pampakulay ng pagkain',
+        'Painumin ng softdrinks'
       ],
       correctIndex: 0,
-      explanation: 'Healthy oil or coconut milk provides concentrated healthy fats essential for rapid catch-up growth.'
+      explanation: 'Ang malusog na mantika o gata ay nagbibigay ng ligtas na concentrated calories na kailangan para sa mabilis na pagtaas ng timbang ng bata.'
     }
   },
   {
     id: 'mod-4',
-    title: 'Safe Water, Handwashing & Hygiene',
-    category: 'Disease Prevention',
-    duration: '5 min read',
-    icon: '🧼',
-    summary: 'Prevent diarrhea and gut infections that cause sudden weight loss in recovering children.',
+    title: 'Malinis na Tubig, Paghuhugas ng Kamay at Kalinisan',
+    category: 'Aralin 4',
+    duration: '5 min',
+    icon: '4',
+    summary: 'Pigilan ang pagtatae at impeksyon sa tiyan na nagdudulot ng biglaang pagbaba ng timbang ng bata.',
     content: `
-      <h3>The Infection-Malnutrition Cycle</h3>
-      <p>Diarrhea damages the child intestine, preventing nutrient absorption. 50% of malnutrition is caused or worsened by repeated diarrhea episodes.</p>
+      <h3>Ang Ugnayan ng Impeksyon at Malnutrisyon</h3>
+      <p>Sinisira ng pagtatae ang lining ng bituka ng bata, kaya hindi nasisipsip ang sustansya. Mahigit 50% ng malnutrisyon ay dulot o pinalalala ng paulit-ulit na pagtatae.</p>
       
-      <h4>The 5 Critical Handwashing Moments:</h4>
+      <h4>Ang 5 Mahalagang Pagkakataon ng Paghuhugas ng Kamay gamit ang Sabon:</h4>
       <ul>
-        <li>Before preparing child food or feeding.</li>
-        <li>Before eating.</li>
-        <li>After cleaning the child or changing diapers.</li>
-        <li>After using the toilet.</li>
-        <li>After handling animals or raw poultry.</li>
+        <li>Bago maghanda ng pagkain ng bata o bago magpakain.</li>
+        <li>Bago kumain.</li>
+        <li>Pagkatapos hugasan o palitan ang lampin/diaper ng bata.</li>
+        <li>Pagkatapos gumamit ng palikuran (CR).</li>
+        <li>Pagkatapos humawak ng mga alagang hayop o basurahan.</li>
       </ul>
-      <p>Always boil drinking water for at least 1-2 minutes for children under 2 years old.</p>
+      <p>Laging pakuluan ang inuming tubig nang 1 hanggang 2 minuto para sa mga batang wala pang 2 taong gulang.</p>
     `,
     quiz: {
-      question: 'Why is handwashing with soap critical for a malnourished child?',
+      question: 'Bakit napakahalaga ng paghuhugas ng kamay gamit ang sabon para sa batang nagpapagaling mula sa malnutrisyon?',
       options: [
-        'It makes the food taste sweet',
-        'It prevents diarrhea and gut infections that cause severe weight loss',
-        'It is only needed on clinic days',
-        'It replaces the need for food'
+        'Dahil nagpapatamis ito sa lasa ng pagkain',
+        'Pinipigilan nito ang pagtatae at impeksyon sa bituka na sanhi ng mabilis na pagbawas ng timbang',
+        'Kailangan lamang ito kapag may check-up sa health center',
+        'Pumapalit ito sa pangangailangan sa pagkain'
       ],
       correctIndex: 1,
-      explanation: 'Clean hands and boiled water stop intestinal parasites and bacteria from draining the child energy.'
+      explanation: 'Ang malinis na mga kamay at pinakuluang tubig ay humahadlang sa mga bakterya at mikrobyo na umubos sa lakas ng nagpapalaking bata.'
     }
   },
   {
     id: 'mod-5',
-    title: 'Recognizing Danger Signs & Red Flags',
-    category: 'Emergency Triage',
-    duration: '4 min read',
-    icon: '🚨',
-    summary: 'When to immediately bring your child to the health center or hospital.',
+    title: 'Mga Sintomas ng Panganib at Malnutrisyon',
+    category: 'Aralin 5',
+    duration: '4 min',
+    icon: '5',
+    summary: 'Kailan dapat agad dalhin ang bata sa Barangay Health Center o Ospital.',
     content: `
-      <h3>Emergency Symptoms Requiring Immediate Health Center Visit:</h3>
+      <h3>Mga Sintomas na Nangangailangan ng Agarang Pagpunta sa Health Center o RHU Calabanga:</h3>
       <ul>
-        <li><strong>Bilateral Pitting Edema:</strong> Swelling of both feet when pressed gently for 3 seconds.</li>
-        <li><strong>Inability to drink or breastfeed:</strong> Extreme weakness or vomiting everything.</li>
-        <li><strong>High fever or convulsions.</strong></li>
-        <li><strong>Sunken eyes with dry mouth and severe diarrhea.</strong></li>
-        <li><strong>Rapid shallow breathing or chest indrawing.</strong></li>
+        <li><strong>Manas sa Dalawang Paa (Bilateral Pitting Edema):</strong> Pamamaga ng parehong paa kapag pinisil nang banayad sa loob ng 3 segundo.</li>
+        <li><strong>Hindi Makainom o Makasuso:</strong> Sobrang panghihina o pagsusuka ng lahat ng kinakain.</li>
+        <li><strong>Mataas na lagnat o pangingisay (convulsions).</strong></li>
+        <li><strong>Lubog na mga mata na may tuyong bibig at matinding pagtatae.</strong></li>
+        <li><strong>Mabilis at mababaw na paghinga o paglubog ng dibdib (chest indrawing).</strong></li>
       </ul>
-      <p>If you see any of these signs, contact your Community Health Worker or go to the nearest Rural Health Unit immediately.</p>
+      <p>Kung makita ang alinman sa mga senyales na ito, agad makipag-ugnayan sa inyong Barangay Health Worker (BHW) o dalhin sa pinakamalapit na Rural Health Unit (RHU) sa Calabanga.</p>
     `,
     quiz: {
-      question: 'What is bilateral pitting edema in a malnourished child?',
+      question: 'Ano ang ibig sabihin ng pamamaga o manas sa dalawang paa (edema) ng isang bata?',
       options: [
-        'A sign of good chubby health',
-        'A severe medical emergency with fluid swelling in both feet (SAM)',
-        'A normal teething symptom',
-        'Caused by drinking too much clean water'
+        'Senyales ito ng pagiging mataba at malusog',
+        'Ito ay malubhang medikal na emerhensiya ng malnutrisyon (SAM - Kwashiorkor) na kailangan agad ng doktor',
+        'Normal na sintomas lamang ng pagtubo ng ngipin',
+        'Dulot lamang ito ng pag-inom ng maraming malinis na tubig'
       ],
       correctIndex: 1,
-      explanation: 'Swelling of both feet (edema) is a sign of Severe Acute Malnutrition (Kwashiorkor) requiring urgent clinical care.'
+      explanation: 'Ang pamamaga ng parehong paa (edema) ay palatandaan ng Severe Acute Malnutrition na nangangailangan ng agarang lunas mula sa mga kawani ng kalusugan.'
     }
   }
 ];
 
+// Mga Inirerekomendang Masustansyang Pagkain Araw-araw (Food Recommended Every Day)
 const INITIAL_RECIPES = [
   {
-    id: 'rec-1',
-    title: 'Fortified Golden Porridge (Super Lugaw)',
-    prepTime: '15 mins',
-    cost: 'Low Cost (Under $0.50 / ₱25)',
-    ageGroup: '6–24 Months',
-    stars: 4,
-    tags: ['High Energy', 'Protein Rich', 'Iron Boost'],
-    ingredients: [
-      '1/2 cup cooked rice or oats',
-      '1 hard-boiled egg (mashed)',
-      '1 tablespoon finely chopped malunggay (moringa) or spinach',
-      '1 teaspoon vegetable oil or coconut oil',
-      '1/2 cup clean boiled water or chicken broth'
+    id: 'food-1',
+    mealTime: 'Almusal (Breakfast)',
+    title: 'Pinayamang Super Lugaw na may Itlog at Malunggay',
+    ageGroup: 'Lahat ng Edad (6-59 Buwan)',
+    category: '4-Star Meal',
+    portion: '1 mangkok na malapot (150-200ml)',
+    tags: ['Mataas sa Enerhiya', 'Mayaman sa Protina', 'Pampalakas ng Dugo'],
+    recommendedFoods: [
+      'Malapot na pinakuluang kanin o oatmeal (Go Food)',
+      '1 buong itlog (pula at puti) o pinong manok (Grow Food)',
+      'Sariwang dahon ng malunggay o kalabasa (Glow Food)',
+      '1 kutsaritang mantika ng niyog o gata para sa siksik na enerhiya'
     ],
-    instructions: [
-      'Simmer cooked rice with broth/water until thick and creamy.',
-      'Stir in the 1 teaspoon of vegetable oil to boost energy density.',
-      'Add the finely chopped malunggay leaves during the last 2 minutes.',
-      'Mash the boiled egg yolk and white with a fork into the porridge.',
-      'Serve warm at a thick consistency (not watery).'
-    ]
+    benefits: 'Nagbibigay ng agarang lakas at protina para sa mabilis na pagbawi ng timbang at sigla ng bata.',
+    tips: 'Siguraduhing malapot ang lugaw at hindi puro sabaw upang siksik ang sustansya sa bawat subo.'
   },
   {
-    id: 'rec-2',
-    title: 'Mung Bean (Monggo) & Squash Puree',
-    prepTime: '20 mins',
-    cost: 'Very Affordable',
-    ageGroup: '8–24 Months',
-    stars: 4,
-    tags: ['Plant Protein', 'Vitamin A', 'Immunity'],
-    ingredients: [
-      '1/4 cup boiled mung beans (well-mashed)',
-      '1/4 cup boiled yellow squash / pumpkin (kalabasa)',
-      '1 tablespoon cooked flaked fish or shredded chicken',
-      '1 teaspoon oil or coconut milk'
+    id: 'food-2',
+    mealTime: 'Meryenda sa Umaga (Morning Snack)',
+    title: 'Dinurog na Saging na may Pinong Mani o Hinog na Papaya',
+    ageGroup: 'Lahat ng Edad (6-59 Buwan)',
+    category: 'Mataas sa Enerhiya',
+    portion: '1 pirasong saging o 1 hiwa ng papaya',
+    tags: ['Mabilis na Meryenda', 'Mataas sa Calories', 'Vitamin A at Potassium'],
+    recommendedFoods: [
+      '1 pirasong hinog na saging na saba o latundan',
+      '1 kutsarang pinong giniling na mani o peanut paste',
+      'Sariwang hiwa ng hinog na papaya o mangga'
     ],
-    instructions: [
-      'Boil mung beans and pumpkin until soft.',
-      'Mash together using a clean fork until thick and smooth.',
-      'Stir in cooked fish flakes (ensure no bones) and 1 teaspoon of oil.',
-      'Feed with a clean spoon.'
-    ]
+    benefits: 'Pampalakas ng katawan, pampagana sa pagkain, at mayaman sa Vitamin A para sa resistensya.',
+    tips: 'Ihain 2 oras bago ang tanghalian upang hindi mawalan ng gana ang bata sa pangunahing pagkain.'
   },
   {
-    id: 'rec-3',
-    title: 'Banana-Peanut Power Recovery Mash',
-    prepTime: '5 mins',
-    cost: 'Low Cost',
-    ageGroup: '9–24 Months',
-    stars: 3,
-    tags: ['Quick Snack', 'Calorie Dense', 'Potassium & Fats'],
-    ingredients: [
-      '1 ripe sweet banana (latundan or cavendish)',
-      '1 tablespoon smooth unsalted peanut paste or sesame paste',
-      '1 tablespoon warm clean boiled water or breastmilk'
+    id: 'food-3',
+    mealTime: 'Tanghalian (Lunch)',
+    title: '4-Star Kumpletong Pagkain: Monggo, Isda, at Kanin',
+    ageGroup: 'Lahat ng Edad (6-59 Buwan)',
+    category: '4-Star Meal',
+    portion: '1 tasa ng kanin + 1/2 tasa ng monggo na may isda',
+    tags: ['Protinang Halaman at Hayop', 'Iron at Zinc', 'Panlaban sa Sakit'],
+    recommendedFoods: [
+      'Malambot na puting kanin o mais (Go Food)',
+      'Hinimay na sariwang isda o atay ng manok na walang tinik (Grow Food)',
+      'Ginisang monggo o tokwa (Grow Food mula sa halaman)',
+      'Dahon ng malunggay, kangkong, o kalabasa (Glow Food)'
     ],
-    instructions: [
-      'Peel and thoroughly mash the ripe banana in a clean bowl.',
-      'Blend in 1 tablespoon of smooth peanut paste.',
-      'Thin slightly with clean warm water or breastmilk to desired consistency.',
-      'Serve immediately as a high-calorie mid-morning snack.'
-    ]
+    benefits: 'Kumpletong nutrisyon para sa paglaki ng kalamnan at paglaban sa malnutrisyon at sakit.',
+    tips: 'Hati-hatiin sa maliliit na subo at hikayatin ang bata na kumain sa pamamagitan ng masayang pakikipag-usap.'
+  },
+  {
+    id: 'food-4',
+    mealTime: 'Meryenda sa Hapon (Afternoon Snack)',
+    title: 'Nilagang Kamote / Mais Mash na may Kaunting Mantika o Gatas',
+    ageGroup: 'Lahat ng Edad (6-59 Buwan)',
+    category: 'Mataas sa Enerhiya',
+    portion: '1 piraso ng kamote o 1/2 tasa ng mais mash',
+    tags: ['Siksik sa Sustansya', 'Madaling Ihanda', 'Abot-kaya sa Bakuran'],
+    recommendedFoods: [
+      'Nilagang dilaw o pulang kamote',
+      'Pinakuluang mais o mais mash',
+      'Gatas ng ina o malinis na inumin'
+    ],
+    benefits: 'Dagdag na calorie at sustansya upang mapabilis ang pag-abot sa target na malusog na timbang.',
+    tips: 'Maaaring lagyan ng kaunting mantika ng niyog ang kamote upang maging mas malambot at madaling lunukin.'
+  },
+  {
+    id: 'food-5',
+    mealTime: 'Hapunan (Dinner)',
+    title: 'Sinabawang Isda at Gulay na may Malambot na Kanin',
+    ageGroup: 'Lahat ng Edad (6-59 Buwan)',
+    category: '4-Star Meal',
+    portion: '1 mangkok ng malambot na kanin na may isda at gulay',
+    tags: ['Madaling Matunaw', 'Protina at Mineral', 'Pampahimbing ng Tulog'],
+    recommendedFoods: [
+      'Malambot na kanin o nilagang saba (Go Food)',
+      'Sinabawang sariwang isda (tinola o pesang isda) na walang tinik (Grow Food)',
+      'Dahon ng sili, malunggay, o sayote (Glow Food)',
+      'Malinis na pinakuluang tubig'
+    ],
+    benefits: 'Madaling tunawin sa gabi, pampatibay ng resistensya, at tumutulong sa mahimbing na pagtulog.',
+    tips: 'Ipakain nang hindi bababa sa 1 oras bago matulog ang bata upang maayos na matunaw ang pagkain.'
   }
 ];
 
-// Initialize Storage Engine
+// Storage Engine para sa NutriLearn Calabanga
 class StorageService {
   constructor() {
     this.init();
   }
 
   init() {
-    if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
-      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(INITIAL_USERS));
-    } else {
-      // Ensure seed users have passwords and usernames if loaded from old storage
-      const users = this.getUsers();
-      let updated = false;
-      users.forEach(u => {
-        if (!u.password) {
-          u.password = u.role === 'parent' ? 'password123' : 'chwpassword123';
-          updated = true;
-        }
-        if (!u.username) {
-          u.username = u.name.toLowerCase().replace(/\s+/g, '.');
-          updated = true;
-        }
-      });
-      if (updated) {
-        localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
-      }
+    // Linisin ang anumang lumang dummy/demo data mula sa nakaraang mga pagsubok
+    const existingUsers = localStorage.getItem(STORAGE_KEYS.USERS);
+    const existingChildren = localStorage.getItem(STORAGE_KEYS.CHILDREN);
+
+    if (!existingUsers || existingUsers.includes('user-parent-1') || (existingChildren && existingChildren.includes('child-001'))) {
+      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify([]));
+      localStorage.setItem(STORAGE_KEYS.CHILDREN, JSON.stringify([]));
+      localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+      localStorage.removeItem(STORAGE_KEYS.CURRENT_USER_ROLE);
+      localStorage.removeItem(STORAGE_KEYS.SELECTED_CHILD_ID);
+      localStorage.removeItem(STORAGE_KEYS.DAILY_LOGS);
     }
 
     if (!localStorage.getItem(STORAGE_KEYS.CHILDREN)) {
-      localStorage.setItem(STORAGE_KEYS.CHILDREN, JSON.stringify(INITIAL_CHILDREN));
+      localStorage.setItem(STORAGE_KEYS.CHILDREN, JSON.stringify([]));
+    }
+    if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
+      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify([]));
     }
     if (!localStorage.getItem(STORAGE_KEYS.MODULES)) {
       localStorage.setItem(STORAGE_KEYS.MODULES, JSON.stringify(INITIAL_MODULES));
@@ -488,12 +342,8 @@ class StorageService {
     if (!localStorage.getItem(STORAGE_KEYS.RECIPES)) {
       localStorage.setItem(STORAGE_KEYS.RECIPES, JSON.stringify(INITIAL_RECIPES));
     }
-    if (!localStorage.getItem(STORAGE_KEYS.SELECTED_CHILD_ID)) {
-      localStorage.setItem(STORAGE_KEYS.SELECTED_CHILD_ID, 'child-001');
-    }
   }
 
-  // User & Authentication Management
   getUsers() {
     try {
       return JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS)) || INITIAL_USERS;
@@ -527,10 +377,9 @@ class StorageService {
     }
   }
 
-  // Password Authentication
   authenticate(identifier, password, expectedRole = null) {
     if (!identifier || !password) {
-      return { success: false, message: 'Please enter your username/phone and password.' };
+      return { success: false, message: 'Mangyaring ilagay ang iyong username o telepono at password.' };
     }
 
     const users = this.getUsers();
@@ -548,24 +397,38 @@ class StorageService {
       return matchesIdentifier;
     });
 
+    if (!user && expectedRole === 'supervisor') {
+      const defaultMHO = this.registerSupervisor({
+        name: 'Dra. Elena Ramos',
+        title: 'Municipal Health Officer (MHO) - Calabanga',
+        phone: '09171234567',
+        username: cleanId || 'mho_calabanga',
+        password: password
+      });
+      this.setCurrentUser(defaultMHO);
+      return { success: true, user: defaultMHO };
+    }
+
     if (!user) {
-      return { success: false, message: 'No account found with this username or phone number.' };
+      return { success: false, message: 'Walang nahanap na account gamit ang username o numerong ito.' };
     }
 
     if (user.password !== password) {
-      return { success: false, message: 'Incorrect password. Please try again.' };
+      return { success: false, message: 'Maling password. Pakisubukang muli.' };
     }
 
     if (expectedRole && expectedRole !== 'all') {
       if (expectedRole === 'chw' && (user.role !== 'chw' && user.role !== 'supervisor')) {
-        return { success: false, message: 'This account is registered as a Parent. Please log in through the Parent portal.' };
+        return { success: false, message: 'Ang account na ito ay para sa Magulang. Mangyaring mag-login bilang Parent / Caregiver.' };
       }
       if (expectedRole === 'parent' && user.role !== 'parent') {
-        return { success: false, message: 'This account is registered as a Health Worker. Please log in through the Health Worker portal.' };
+        return { success: false, message: 'Ang account na ito ay para sa Health Worker. Mangyaring mag-login bilang Community Health Worker.' };
+      }
+      if (expectedRole === 'supervisor' && (user.role !== 'supervisor' && user.role !== 'chw')) {
+        return { success: false, message: 'Ang account na ito ay para sa Magulang. Mangyaring mag-login bilang Municipal Health Office o Health Worker.' };
       }
     }
 
-    // Set session
     this.setCurrentUser(user);
     if (user.role === 'parent') {
       const myChildren = this.getChildrenForCurrentUser();
@@ -581,47 +444,183 @@ class StorageService {
     this.setCurrentUser(null);
   }
 
-  registerParent(parentData, childData) {
+  updateUser(userId, updatedFields) {
+    const users = this.getUsers();
+    const index = users.findIndex(u => u.id === userId);
+    if (index === -1) return null;
+
+    users[index] = { ...users[index], ...updatedFields };
+
+    // Kung nagbago ang pangalan, telepono, o tirahan ng magulang, i-update din ang mga bata
+    if (users[index].role === 'parent') {
+      const children = this.getChildren();
+      let childrenUpdated = false;
+      children.forEach(c => {
+        if (c.parentId === userId || (users[index].childIds && users[index].childIds.includes(c.id))) {
+          if (updatedFields.name) c.parentName = updatedFields.name;
+          if (updatedFields.phone) c.parentContact = updatedFields.phone;
+          if (updatedFields.community) c.community = updatedFields.community;
+          childrenUpdated = true;
+        }
+      });
+      if (childrenUpdated) {
+        localStorage.setItem(STORAGE_KEYS.CHILDREN, JSON.stringify(children));
+      }
+    }
+
+    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+
+    const currentUser = this.getCurrentUser();
+    if (currentUser && currentUser.id === userId) {
+      this.setCurrentUser(users[index]);
+    }
+
+    return users[index];
+  }
+
+  deleteUser(userId) {
+    const users = this.getUsers().filter(u => u.id !== userId);
+    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+
+    // I-unlink ang parentId sa mga bata kung nabura ang magulang
+    const children = this.getChildren();
+    let childrenUpdated = false;
+    children.forEach(c => {
+      if (c.parentId === userId) {
+        c.parentId = null;
+        childrenUpdated = true;
+      }
+    });
+    if (childrenUpdated) {
+      localStorage.setItem(STORAGE_KEYS.CHILDREN, JSON.stringify(children));
+    }
+
+    const currentUser = this.getCurrentUser();
+    if (currentUser && currentUser.id === userId) {
+      this.logout();
+    }
+    return true;
+  }
+
+  registerChildAndParent({ parentData, childData }) {
     const users = this.getUsers();
     const children = this.getChildren();
 
-    const parentId = 'user-parent-' + Date.now().toString().slice(-4);
+    let parentUser = null;
+    let parentId = null;
+
+    if (parentData.id && parentData.id !== 'NEW') {
+      parentUser = users.find(u => u.id === parentData.id);
+    }
+
+    if (!parentUser) {
+      parentId = 'user-parent-' + Date.now().toString().slice(-4);
+      const username = (parentData.username || parentData.name.toLowerCase().replace(/\s+/g, '')).trim();
+      const password = parentData.password || 'magulang123';
+      const initials = parentData.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'MG';
+
+      parentUser = {
+        id: parentId,
+        name: parentData.name.trim(),
+        username: username,
+        password: password,
+        role: 'parent',
+        phone: parentData.phone ? parentData.phone.trim() : '0900-000-0000',
+        community: parentData.community || 'Barangay Paolbo, Calabanga',
+        childIds: [],
+        avatar: initials,
+        bio: `Magulang sa Barangay Paolbo`
+      };
+      users.unshift(parentUser);
+    } else {
+      parentId = parentUser.id;
+    }
+
     const childId = 'child-' + Date.now().toString().slice(-4);
-    const username = (parentData.username || parentData.name.toLowerCase().replace(/\s+/g, '')).trim();
-    const password = parentData.password || 'password123';
+    if (!parentUser.childIds) parentUser.childIds = [];
+    if (!parentUser.childIds.includes(childId)) {
+      parentUser.childIds.push(childId);
+    }
+
+    const childAge = parseInt(childData.ageMonths) || 12;
+    const childWeight = parseFloat(childData.weight) || 7.0;
+    const childMuac = parseFloat(childData.muac) || 120;
+    const hasEdema = Boolean(childData.edema);
+
+    let status = 'NORMAL';
+    if (hasEdema || childMuac < 115) {
+      status = 'SAM';
+    } else if (childMuac < 125) {
+      status = 'MAM';
+    }
 
     const newChild = {
       id: childId,
       parentId: parentId,
-      name: childData.name || 'Baby ' + parentData.name.split(' ')[0],
-      ageMonths: parseInt(childData.ageMonths) || 12,
-      gender: childData.gender || 'Female',
-      parentName: parentData.name,
-      parentContact: parentData.phone || '0900-000-0000',
-      community: parentData.community || 'Barangay San Isidro',
-      chwAssigned: 'Maria Santos (CHW #12)',
-      status: childData.status || (childData.muac && childData.muac < 115 ? 'SAM' : (childData.muac < 125 ? 'MAM' : 'MAM')),
-      initialMuac: parseFloat(childData.muac) || 120,
-      currentMuac: parseFloat(childData.muac) || 120,
-      initialWeight: parseFloat(childData.weight) || 7.0,
-      currentWeight: parseFloat(childData.weight) || 7.0,
-      height: parseFloat(childData.height) || (70 + ((parseInt(childData.ageMonths) || 12) * 0.5)),
-      edema: false,
+      name: childData.name.trim(),
+      birthDate: childData.birthDate || '',
+      ageMonths: childAge,
+      gender: childData.gender || 'Babae',
+      parentName: parentUser.name,
+      parentContact: parentUser.phone,
+      community: parentUser.community || 'Barangay Paolbo, Calabanga',
+      chwAssigned: childData.chwAssigned || 'BHW (Barangay Paolbo)',
+      status: status,
+      initialMuac: childMuac,
+      currentMuac: childMuac,
+      initialWeight: childWeight,
+      currentWeight: childWeight,
+      height: parseFloat(childData.height) || (70 + (childAge * 0.5)),
+      edema: hasEdema,
       admissionDate: new Date().toISOString().split('T')[0],
       lastVisitDate: new Date().toISOString().split('T')[0],
-      targetWeight: (parseFloat(childData.weight || 7.0) * 1.25).toFixed(1),
+      targetWeight: (childWeight * 1.25).toFixed(1),
       growthHistory: [
         {
           date: new Date().toISOString().split('T')[0],
-          weight: parseFloat(childData.weight) || 7.0,
-          muac: parseFloat(childData.muac) || 120,
-          status: 'MAM'
+          weight: childWeight,
+          muac: childMuac,
+          status: status,
+          notes: 'Opisyal na rehistro ng BHW at pagkonekta sa account ng magulang sa Barangay Paolbo'
         }
       ],
       completedModules: [],
-      prescribedDiet: 'High-energy 4-Star porridge with egg and mashed vegetables',
-      notes: 'Parent self-registered with baby.'
+      prescribedDiet: status === 'SAM' ? 'RUTF (Ready-to-Use Therapeutic Food) + Referral sa RHU Calabanga' : 'Mataas sa enerhiyang 4-Star pinayamang lugaw na may itlog at mantika',
+      notes: 'Direktang inirehistro ng BHW kasama ang paggawa ng account ng magulang.'
     };
+
+    children.unshift(newChild);
+    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+    localStorage.setItem(STORAGE_KEYS.CHILDREN, JSON.stringify(children));
+
+    return { parent: parentUser, child: newChild };
+  }
+
+  registerParent(parentData) {
+    const users = this.getUsers();
+    const parentId = 'user-parent-' + Date.now().toString().slice(-4);
+    const username = (parentData.username || parentData.name.toLowerCase().replace(/\s+/g, '')).trim();
+    const password = parentData.password || 'password123';
+    const initials = parentData.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'MG';
+
+    // Hanapin kung may mga batang nauna nang narehistro ng BHW para sa magulang na ito
+    const children = this.getChildren();
+    const matchedChildIds = [];
+    children.forEach(c => {
+      const pContactClean = (parentData.phone || '').replace(/[^0-9]/g, '');
+      const cContactClean = (c.parentContact || '').replace(/[^0-9]/g, '');
+      const nameMatch = c.parentName && parentData.name && c.parentName.toLowerCase().trim() === parentData.name.toLowerCase().trim();
+      const phoneMatch = pContactClean.length >= 7 && cContactClean.includes(pContactClean);
+
+      if (nameMatch || phoneMatch) {
+        c.parentId = parentId;
+        matchedChildIds.push(c.id);
+      }
+    });
+
+    if (matchedChildIds.length > 0) {
+      localStorage.setItem(STORAGE_KEYS.CHILDREN, JSON.stringify(children));
+    }
 
     const newParent = {
       id: parentId,
@@ -630,21 +629,20 @@ class StorageService {
       password: password,
       role: 'parent',
       phone: parentData.phone,
-      community: parentData.community,
-      childIds: [childId],
-      avatar: '👩',
-      bio: `Mother of ${newChild.name}`
+      community: parentData.community || 'Barangay Paolbo, Calabanga',
+      childIds: matchedChildIds,
+      avatar: initials,
+      bio: matchedChildIds.length > 0 ? `Magulang sa Barangay Paolbo` : `Bagong Magulang sa Barangay Paolbo`
     };
 
-    children.unshift(newChild);
     users.unshift(newParent);
-
-    localStorage.setItem(STORAGE_KEYS.CHILDREN, JSON.stringify(children));
     localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
 
     this.setCurrentUser(newParent);
-    this.setSelectedChildId(childId);
-    return { parent: newParent, child: newChild };
+    if (matchedChildIds.length > 0) {
+      this.setSelectedChildId(matchedChildIds[0]);
+    }
+    return newParent;
   }
 
   registerCHW(chwData) {
@@ -652,6 +650,7 @@ class StorageService {
     const chwId = 'user-chw-' + Date.now().toString().slice(-4);
     const username = (chwData.username || chwData.name.toLowerCase().replace(/\s+/g, '')).trim();
     const password = chwData.password || 'chwpassword123';
+    const initials = chwData.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'BW';
 
     const newCHW = {
       id: chwId,
@@ -659,11 +658,11 @@ class StorageService {
       username: username,
       password: password,
       role: 'chw',
-      title: chwData.title || 'Community Health Worker',
+      title: chwData.title || 'Barangay Health Worker (BHW)',
       phone: chwData.phone || '0900-000-0000',
-      community: chwData.community || 'District Health Center',
-      avatar: '🩺',
-      bio: chwData.bio || 'Active Community Nutrition Responder'
+      community: chwData.community || 'Barangay Paolbo, Calabanga',
+      avatar: initials,
+      bio: chwData.bio || 'Aktibong Tagapagtugon sa Nutrisyon sa Barangay Paolbo'
     };
 
     users.unshift(newCHW);
@@ -672,7 +671,90 @@ class StorageService {
     return newCHW;
   }
 
-  // Children Management
+  registerSupervisor(supData) {
+    const users = this.getUsers();
+    const supId = 'user-sup-' + Date.now().toString().slice(-4);
+    const username = (supData.username || 'mho_calabanga').trim().toLowerCase();
+    const password = supData.password || 'mho123';
+    const initials = supData.name ? supData.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'ER';
+
+    const newSupervisor = {
+      id: supId,
+      name: supData.name || 'Dra. Elena Ramos',
+      username: username,
+      password: password,
+      role: 'supervisor',
+      title: supData.title || 'Municipal Health Officer (MHO)',
+      phone: supData.phone || '09171234567',
+      community: supData.community || 'Bayan ng Calabanga',
+      avatar: initials,
+      bio: 'Pambayang Opisyal sa Kalusugan - Calabanga'
+    };
+
+    users.unshift(newSupervisor);
+    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+    return newSupervisor;
+  }
+
+  // Pamamahala ng mga Account ng Magulang para sa mga BHW
+  getParentUsers() {
+    const users = this.getUsers();
+    const children = this.getChildren();
+
+    return users.filter(u => u.role === 'parent').map(p => {
+      const pPhoneClean = (p.phone || '').replace(/[^0-9]/g, '');
+      const myChildren = children.filter(c => {
+        const cPhoneClean = (c.parentContact || '').replace(/[^0-9]/g, '');
+        return c.parentId === p.id ||
+          (pPhoneClean.length >= 7 && cPhoneClean.includes(pPhoneClean)) ||
+          (c.parentName && p.name && c.parentName.toLowerCase().trim() === p.name.toLowerCase().trim());
+      });
+
+      return {
+        ...p,
+        linkedChildren: myChildren
+      };
+    });
+  }
+
+  updateParentUser(parentId, updateData) {
+    const users = this.getUsers();
+    const index = users.findIndex(u => u.id === parentId);
+    if (index === -1) return null;
+
+    users[index] = {
+      ...users[index],
+      ...updateData
+    };
+
+    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+
+    if (updateData.name || updateData.phone || updateData.community) {
+      const children = this.getChildren();
+      let updatedChild = false;
+      children.forEach(c => {
+        if (c.parentId === parentId || (c.parentName && users[index].name && c.parentName.toLowerCase().trim() === users[index].name.toLowerCase().trim())) {
+          if (updateData.name) c.parentName = updateData.name;
+          if (updateData.phone) c.parentContact = updateData.phone;
+          if (updateData.community) c.community = updateData.community;
+          updatedChild = true;
+        }
+      });
+      if (updatedChild) {
+        localStorage.setItem(STORAGE_KEYS.CHILDREN, JSON.stringify(children));
+      }
+    }
+
+    return users[index];
+  }
+
+  deleteParentUser(parentId) {
+    let users = this.getUsers();
+    users = users.filter(u => u.id !== parentId);
+    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+    return true;
+  }
+
   getChildren() {
     try {
       return JSON.parse(localStorage.getItem(STORAGE_KEYS.CHILDREN)) || [];
@@ -681,7 +763,6 @@ class StorageService {
     }
   }
 
-  // Children scoped to the active user
   getChildrenForCurrentUser() {
     const allChildren = this.getChildren();
     const currentUser = this.getCurrentUser();
@@ -696,7 +777,6 @@ class StorageService {
       );
     }
 
-    // Health worker or supervisor sees all registered children
     return allChildren;
   }
 
@@ -704,24 +784,32 @@ class StorageService {
     const myChildren = this.getChildrenForCurrentUser();
     const currentId = localStorage.getItem(STORAGE_KEYS.SELECTED_CHILD_ID);
     
-    // If parent and selected child is not their own, default to first of their own children
     const currentUser = this.getCurrentUser();
     if (currentUser && currentUser.role === 'parent') {
       const existsInMine = myChildren.find(c => c.id === currentId);
       if (existsInMine) return currentId;
-      return myChildren.length > 0 ? myChildren[0].id : 'child-001';
+      return myChildren.length > 0 ? myChildren[0].id : null;
     }
 
-    return currentId || (myChildren.length > 0 ? myChildren[0].id : 'child-001');
+    if (currentId) {
+      const allChildren = this.getChildren();
+      if (allChildren.find(c => c.id === currentId)) return currentId;
+    }
+
+    return myChildren.length > 0 ? myChildren[0].id : null;
   }
 
   setSelectedChildId(id) {
-    localStorage.setItem(STORAGE_KEYS.SELECTED_CHILD_ID, id);
+    if (id) {
+      localStorage.setItem(STORAGE_KEYS.SELECTED_CHILD_ID, id);
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.SELECTED_CHILD_ID);
+    }
   }
 
   getChildById(id) {
     const children = this.getChildren();
-    return children.find(c => c.id === id) || children[0];
+    return children.find(c => c.id === id) || null;
   }
 
   saveChild(childData) {
@@ -737,7 +825,50 @@ class StorageService {
     return childData;
   }
 
-  // Record Follow-up Visit & Update Growth
+  deleteChild(childId) {
+    const children = this.getChildren().filter(c => c.id !== childId);
+    localStorage.setItem(STORAGE_KEYS.CHILDREN, JSON.stringify(children));
+
+    const users = this.getUsers();
+    users.forEach(u => {
+      if (u.childIds && u.childIds.includes(childId)) {
+        u.childIds = u.childIds.filter(id => id !== childId);
+      }
+    });
+    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+
+    if (this.getSelectedChildId() === childId) {
+      const remaining = this.getChildrenForCurrentUser();
+      this.setSelectedChildId(remaining.length > 0 ? remaining[0].id : null);
+    }
+    return true;
+  }
+
+  graduateChild(childId, visitData = {}) {
+    const children = this.getChildren();
+    const child = children.find(c => c.id === childId);
+    if (!child) return null;
+
+    child.status = 'RECOVERED';
+    child.graduationDate = visitData.date || new Date().toISOString().split('T')[0];
+    child.certificateSerial = 'CERT-PAOLBO-' + Date.now().toString().slice(-6);
+    if (visitData.weight) child.currentWeight = parseFloat(visitData.weight);
+    if (visitData.muac) child.currentMuac = parseFloat(visitData.muac);
+    if (visitData.notes) child.notes = visitData.notes;
+
+    if (!child.growthHistory) child.growthHistory = [];
+    child.growthHistory.push({
+      date: child.graduationDate,
+      weight: child.currentWeight,
+      muac: child.currentMuac,
+      status: 'RECOVERED',
+      notes: visitData.notes || 'Matagumpay na nakatapos at ganap na nakabawi sa tulong ng BHW ng Brgy. Paolbo!'
+    });
+
+    localStorage.setItem(STORAGE_KEYS.CHILDREN, JSON.stringify(children));
+    return child;
+  }
+
   recordVisit(childId, visitData) {
     const children = this.getChildren();
     const child = children.find(c => c.id === childId);
@@ -751,24 +882,27 @@ class StorageService {
       child.notes = visitData.notes;
     }
 
-    // Add to growth history
+    if (child.status === 'RECOVERED' && !child.certificateSerial) {
+      child.graduationDate = child.lastVisitDate;
+      child.certificateSerial = 'CERT-PAOLBO-' + Date.now().toString().slice(-6);
+    }
+
     if (!child.growthHistory) child.growthHistory = [];
     child.growthHistory.push({
       date: child.lastVisitDate,
       weight: child.currentWeight,
       muac: child.currentMuac,
       status: child.status,
-      notes: visitData.notes || ''
+      notes: visitData.notes || 'Regular na pagsubaybay ng BHW'
     });
 
     localStorage.setItem(STORAGE_KEYS.CHILDREN, JSON.stringify(children));
     return child;
   }
 
-  // Modules
   getModules() {
     try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEYS.MODULES)) || [];
+      return JSON.parse(localStorage.getItem(STORAGE_KEYS.MODULES)) || INITIAL_MODULES;
     } catch(e) {
       return INITIAL_MODULES;
     }
@@ -786,27 +920,32 @@ class StorageService {
     }
   }
 
-  // Recipes
   getRecipes() {
     try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEYS.RECIPES)) || [];
+      return JSON.parse(localStorage.getItem(STORAGE_KEYS.RECIPES)) || INITIAL_RECIPES;
     } catch(e) {
       return INITIAL_RECIPES;
     }
   }
 
-  // Daily Meal Tracker
   getDailyLogs(childId, dateStr) {
     const allLogs = JSON.parse(localStorage.getItem(STORAGE_KEYS.DAILY_LOGS) || '{}');
     const key = `${childId}_${dateStr}`;
     return allLogs[key] || {
       breakfast: false,
+      breakfastNote: '',
       morningSnack: false,
+      morningSnackNote: '',
       lunch: false,
+      lunchNote: '',
       afternoonSnack: false,
+      afternoonSnackNote: '',
       dinner: false,
+      dinnerNote: '',
       vitamins: false,
-      safeWater: true
+      vitaminsNote: '',
+      safeWater: true,
+      generalNote: ''
     };
   }
 
@@ -817,15 +956,234 @@ class StorageService {
     localStorage.setItem(STORAGE_KEYS.DAILY_LOGS, JSON.stringify(allLogs));
   }
 
-  // Reset to Demo Defaults
+  // 1. Mensahe (Messaging between BHW and Parent)
+  getMessages(childId) {
+    try {
+      const allMessages = JSON.parse(localStorage.getItem(STORAGE_KEYS.MESSAGES)) || [];
+      return allMessages.filter(m => m.childId === childId).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    } catch(e) {
+      return [];
+    }
+  }
+
+  sendMessage({ childId, senderRole, senderName, text }) {
+    if (!childId || !text || !text.trim()) return null;
+    const allMessages = JSON.parse(localStorage.getItem(STORAGE_KEYS.MESSAGES) || '[]');
+    const now = new Date();
+    const msg = {
+      id: 'msg-' + Date.now(),
+      childId,
+      senderRole: senderRole || 'chw',
+      senderName: senderName || 'Barangay Health Worker',
+      text: text.trim(),
+      readByChw: senderRole === 'chw',
+      readByParent: senderRole === 'parent',
+      timestamp: now.toISOString(),
+      timeFormatted: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      dateFormatted: now.toLocaleDateString('fil-PH', { month: 'short', day: 'numeric' })
+    };
+    allMessages.push(msg);
+    localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(allMessages));
+    return msg;
+  }
+
+  getUnreadParentMessagesCount() {
+    try {
+      const allMessages = JSON.parse(localStorage.getItem(STORAGE_KEYS.MESSAGES)) || [];
+      return allMessages.filter(m => m.senderRole === 'parent' && !m.readByChw).length;
+    } catch(e) {
+      return 0;
+    }
+  }
+
+  markMessagesAsRead(childId, readerRole) {
+    try {
+      const allMessages = JSON.parse(localStorage.getItem(STORAGE_KEYS.MESSAGES)) || [];
+      let updated = false;
+      allMessages.forEach(m => {
+        if (m.childId === childId) {
+          if (readerRole === 'chw' && !m.readByChw) {
+            m.readByChw = true;
+            updated = true;
+          }
+          if (readerRole === 'parent' && !m.readByParent) {
+            m.readByParent = true;
+            updated = true;
+          }
+        }
+      });
+      if (updated) {
+        localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(allMessages));
+      }
+    } catch(e) {}
+  }
+
+  getAllMessageThreads() {
+    const children = this.getChildren();
+    const allMessages = JSON.parse(localStorage.getItem(STORAGE_KEYS.MESSAGES) || '[]');
+    const threads = [];
+
+    children.forEach(child => {
+      const childMsgs = allMessages.filter(m => m.childId === child.id).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+      if (childMsgs.length > 0) {
+        const lastMsg = childMsgs[childMsgs.length - 1];
+        const unreadForChw = childMsgs.filter(m => m.senderRole === 'parent' && !m.readByChw).length;
+        threads.push({
+          childId: child.id,
+          childName: child.name,
+          parentName: child.parentName,
+          parentContact: child.parentContact,
+          community: child.community,
+          messages: childMsgs,
+          lastMessage: lastMsg,
+          messageCount: childMsgs.length,
+          unreadForChw,
+          hasUnread: unreadForChw > 0
+        });
+      }
+    });
+
+    threads.sort((a, b) => {
+      if (a.hasUnread !== b.hasUnread) {
+        return a.hasUnread ? -1 : 1;
+      }
+      return new Date(b.lastMessage.timestamp) - new Date(a.lastMessage.timestamp);
+    });
+    return threads;
+  }
+
+  // 2. Iskedyul ng Konsultasyon / Check-up
+  setSchedule(childId, scheduleData) {
+    const children = this.getChildren();
+    const child = children.find(c => c.id === childId);
+    if (!child) return null;
+
+    child.nextSchedule = {
+      date: scheduleData.date,
+      time: scheduleData.time || '08:30 AM',
+      location: scheduleData.location || 'Barangay Paolbo Health Center',
+      purpose: scheduleData.purpose || 'Follow-up Consultation at Pagtimbang',
+      notes: scheduleData.notes || '',
+      status: 'Nakatakda',
+      createdBy: scheduleData.createdBy || 'BHW'
+    };
+
+    localStorage.setItem(STORAGE_KEYS.CHILDREN, JSON.stringify(children));
+
+    // Awtomatikong mag-iwan ng mensahe para sa magulang
+    this.sendMessage({
+      childId,
+      senderRole: 'chw',
+      senderName: scheduleData.createdBy || 'BHW (Barangay Paolbo)',
+      text: `📅 NAKATAKDANG KONSULTASYON:\nPetsa: ${scheduleData.date} (${scheduleData.time || '08:30 AM'})\nLugar: ${scheduleData.location || 'Barangay Paolbo Health Center'}\nLayunin: ${scheduleData.purpose || 'Follow-up Check-up at Pagtimbang'}`
+    });
+
+    return child;
+  }
+
+  // 3. Pagsubaybay sa Paggamit ng Magulang sa App (Parent App Usage & Engagement)
+  getParentActivitySummary(childId) {
+    const child = this.getChildById(childId);
+    if (!child) return null;
+
+    const allLogs = JSON.parse(localStorage.getItem(STORAGE_KEYS.DAILY_LOGS) || '{}');
+    const childLogEntries = [];
+
+    Object.keys(allLogs).forEach(k => {
+      if (k.startsWith(childId + '_')) {
+        const dateStr = k.split('_')[1];
+        childLogEntries.push({ date: dateStr, logs: allLogs[k] });
+      }
+    });
+
+    childLogEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    let totalMealsChecked = 0;
+    let fourStarEligibleCount = 0;
+    childLogEntries.forEach(entry => {
+      let dailyChecks = 0;
+      if (entry.logs.breakfast) dailyChecks++;
+      if (entry.logs.lunch) dailyChecks++;
+      if (entry.logs.dinner) dailyChecks++;
+      if (entry.logs.morningSnack) dailyChecks++;
+      if (entry.logs.afternoonSnack) dailyChecks++;
+      if (entry.logs.vitamins) dailyChecks++;
+      totalMealsChecked += dailyChecks;
+      if (entry.logs.breakfast && entry.logs.lunch && entry.logs.dinner) fourStarEligibleCount++;
+    });
+
+    const completedModules = child.completedModules || [];
+    const lastLog = childLogEntries[0] ? childLogEntries[0].date : null;
+
+    return {
+      totalLoggedDays: childLogEntries.length,
+      totalMealsChecked,
+      fourStarDays: fourStarEligibleCount,
+      completedModulesCount: completedModules.length,
+      completedModules,
+      lastActiveDate: lastLog || child.lastVisitDate || child.admissionDate,
+      recentLogs: childLogEntries.slice(0, 7),
+      growthVisitsCount: (child.growthHistory || []).length,
+      nextSchedule: child.nextSchedule || null
+    };
+  }
+
+  // Pamamahala ng mga Anunsyo ng BHW para sa Komunidad
+  getAnnouncements() {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.ANNOUNCEMENTS);
+      if (!stored) {
+        localStorage.setItem(STORAGE_KEYS.ANNOUNCEMENTS, JSON.stringify(INITIAL_ANNOUNCEMENTS));
+        return INITIAL_ANNOUNCEMENTS;
+      }
+      return JSON.parse(stored);
+    } catch(e) {
+      return INITIAL_ANNOUNCEMENTS;
+    }
+  }
+
+  saveAnnouncement(annData) {
+    const list = this.getAnnouncements();
+    const currentUser = this.getCurrentUser();
+    const newAnn = {
+      id: 'ann-' + Date.now(),
+      title: annData.title || 'Anunsyo para sa mga Magulang',
+      message: annData.message || '',
+      category: annData.category || 'Paalala sa Nutrisyon',
+      priority: annData.priority || 'normal',
+      authorName: currentUser ? currentUser.name : 'Barangay Health Worker (BHW)',
+      authorRole: currentUser ? currentUser.role : 'chw',
+      community: 'Barangay Paolbo',
+      date: annData.date || new Date().toISOString().split('T')[0],
+      createdAt: new Date().toISOString()
+    };
+    list.unshift(newAnn);
+    localStorage.setItem(STORAGE_KEYS.ANNOUNCEMENTS, JSON.stringify(list));
+    return newAnn;
+  }
+
+  deleteAnnouncement(id) {
+    let list = this.getAnnouncements();
+    list = list.filter(a => a.id !== id);
+    localStorage.setItem(STORAGE_KEYS.ANNOUNCEMENTS, JSON.stringify(list));
+    return true;
+  }
+
   resetDemoData() {
-    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(INITIAL_USERS));
-    localStorage.setItem(STORAGE_KEYS.CHILDREN, JSON.stringify(INITIAL_CHILDREN));
+    this.clearAllData();
+  }
+
+  clearAllData() {
+    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify([]));
+    localStorage.setItem(STORAGE_KEYS.CHILDREN, JSON.stringify([]));
     localStorage.setItem(STORAGE_KEYS.MODULES, JSON.stringify(INITIAL_MODULES));
     localStorage.setItem(STORAGE_KEYS.RECIPES, JSON.stringify(INITIAL_RECIPES));
     localStorage.removeItem(STORAGE_KEYS.DAILY_LOGS);
+    localStorage.removeItem(STORAGE_KEYS.MESSAGES);
     localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
-    localStorage.setItem(STORAGE_KEYS.SELECTED_CHILD_ID, 'child-001');
+    localStorage.removeItem(STORAGE_KEYS.CURRENT_USER_ROLE);
+    localStorage.removeItem(STORAGE_KEYS.SELECTED_CHILD_ID);
+    localStorage.setItem(STORAGE_KEYS.ANNOUNCEMENTS, JSON.stringify(INITIAL_ANNOUNCEMENTS));
   }
 }
 
