@@ -1,126 +1,1489 @@
 <!DOCTYPE html>
-<html lang="fil">
-
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#0f766e">
-  <meta name="description"
-    content="NutriLearn Calabanga - Plataporma sa Nutrisyon ng Bata at Pagsubaybay sa Malnutrisyon para sa Bayan ng Calabanga at Barangay Paolbo">
-  <title>NutriLearn Calabanga - Barangay Paolbo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0E3D26">
+  <meta name="description" content="NutriLearn: Community e-learning and child malnutrition monitoring application for parents and health workers to reduce child stunting by 10%.">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>NutriLearn - Child Nutrition & Malnutrition Monitoring</title>
 
-  <!-- Google Fonts: Lora, Outfit & Plus Jakarta Sans -->
+  <!-- PWA Manifest & Favicon -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
+
+  <!-- Google Fonts: Inter & Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
 
-  <!-- App Stylesheet -->
-  <link rel="stylesheet" href="css/styles.css">
+  <!-- Core Stylesheets -->
+  <link rel="stylesheet" href="css/styles.css?v=2.1">
+  <link rel="stylesheet" href="css/components.css?v=2.1">
 </head>
-
 <body>
 
-  <!-- Mobile Viewport Container -->
-  <div class="app-viewport">
+  <!-- ==========================================================================
+       STARTUP LOGIN GATEWAY SCREEN (Shown before using web app)
+       ========================================================================== -->
+  <div id="startup-auth-screen" class="startup-gate-screen">
+    <div class="startup-container">
+      <div class="startup-brand-header">
+        <img src="assets/icons/icon-192.svg" alt="NutriLearn Logo">
+        <h1 class="startup-brand-title">NutriLearn</h1>
+        <p class="startup-brand-tagline">Child Health &amp; Malnutrition Monitoring Platform</p>
+        <div class="startup-brand-mission">
+          <span>🎯 Target: 10% Annual Child Stunting Reduction</span>
+        </div>
+      </div>
 
-    <!-- 1. AUTHENTICATION & ROLE SELECTION VIEW (Shown when logged out) -->
-    <div id="auth-view" style="display:none;"></div>
+      <div class="startup-card">
+        <!-- ====================================================================
+             PART 1: SELECT YOUR USER PORTAL (Shown on startup / open link)
+             ==================================================================== -->
+        <div id="startup-part-1">
+          <div style="text-align: center; margin-bottom: 1.5rem;">
+            <div style="display: inline-block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; background: #DCFCE7; color: #166534; font-weight: 700; padding: 4px 14px; border-radius: var(--radius-full); margin-bottom: 0.5rem; border: 1px solid #BBF7D0;">
+              Part 1 of 2: Portal Selection
+            </div>
+            <h2 style="font-family: var(--font-heading); font-size: 1.6rem; color: var(--color-primary-900); margin: 0.35rem 0;">
+              Select Your User Portal
+            </h2>
+            <p style="font-size: 0.92rem; color: var(--text-secondary); max-width: 580px; margin: 0 auto;">
+              Each portal provides dedicated tools designed for your specific role. Select your portal to proceed to Sign In &amp; Sign Up:
+            </p>
+          </div>
 
-    <!-- 2. MAIN APPLICATION SHELL (Shown when logged in) -->
-    <div id="main-app-layout" style="display:none; flex-direction:column; flex:1;">
+          <!-- 3 Portals Grid -->
+          <div class="auth-roles-grid" style="margin-bottom: 1.5rem;">
+            <!-- Option 1: Parent Portal -->
+            <div class="auth-role-card" onclick="NutriApp.choosePortalAndProceed('parent')">
+              <div>
+                <div class="auth-role-icon">👨‍👩‍👧</div>
+                <div class="auth-role-title">Parent Portal</div>
+                <p class="auth-role-desc">
+                  For parents &amp; caregivers. Access nutrition lessons, Pinggang Pinoy affordable meal builders, and monitor your child's growth curve against WHO standards.
+                </p>
+              </div>
+              <button type="button" class="btn btn-primary btn-sm" style="width: 100%;">
+                Proceed to Parent Sign In →
+              </button>
+            </div>
 
-      <!-- App Header -->
-      <header class="app-header">
-        <div class="header-top">
-          <div class="brand-badge">
-            <div class="brand-text">
-              <h1 id="header-portal-title">NutriLearn Calabanga</h1>
-              <span id="header-portal-subtitle">Bayan ng Calabanga • Barangay Paolbo</span>
+            <!-- Option 2: BHW Portal -->
+            <div class="auth-role-card" onclick="NutriApp.choosePortalAndProceed('chw')">
+              <div>
+                <div class="auth-role-icon">🩺</div>
+                <div class="auth-role-title">BHW Portal</div>
+                <p class="auth-role-desc">
+                  For Barangay Health Workers &amp; BNS. Malnutrition child registry, WHO anthropometric calculator, recovery tracking, and electronic report submissions.
+                </p>
+              </div>
+              <button type="button" class="btn btn-primary btn-sm" style="width: 100%;">
+                Proceed to BHW Sign In →
+              </button>
+            </div>
+
+            <!-- Option 3: Administrator Portal -->
+            <div class="auth-role-card" onclick="NutriApp.choosePortalAndProceed('mho')">
+              <div>
+                <div class="auth-role-icon">🏛️</div>
+                <div class="auth-role-title">Administrator Portal</div>
+                <p class="auth-role-desc">
+                  For Municipal Health Officers. 10% child stunting reduction goal gauge, municipal hotspot tracking, and BHW monthly report approvals.
+                </p>
+              </div>
+              <button type="button" class="btn btn-primary btn-sm" style="width: 100%;">
+                Proceed to Admin Sign In →
+              </button>
             </div>
           </div>
 
-          <div class="header-actions">
-            <!-- Child Switcher (Only visible for parents with multiple children) -->
-            <button id="btn-child-switcher" class="header-action-btn btn-switcher-pill"
-              title="Palitan ang Profile ng Bata" onclick="window.app.openChildSwitcher()" style="display:none;">
-              Palitan
-            </button>
-            <button class="header-action-btn btn-setting-pill" title="Mga Setting" onclick="window.app.openSettings()">
-              Setting
-            </button>
-            <button class="header-action-btn btn-logout-pill" title="Lumabas sa Account" onclick="window.app.logout()">
-              Lumabas
-            </button>
+          <div style="text-align: center; margin-top: 1.25rem; font-size: 0.85rem; color: var(--text-muted);">
+            💡 <strong>Next Step:</strong> Click any portal card above to move to <strong>Part 2 (Sign In / Sign Up)</strong>.
           </div>
         </div>
-      </header>
 
-      <!-- Network & Sync Status Strip -->
-      <div class="status-strip">
-        <div class="status-online" id="network-status-text">
-          <span class="dot-pulse"></span>
-          <span>Handa kahit Offline • Lokal na Database</span>
+        <!-- ====================================================================
+             PART 2: SIGN IN & SIGN UP PHASE (Moves here after clicking portal)
+             ==================================================================== -->
+        <div id="startup-part-2" style="display: none;">
+          <!-- Selected Portal Banner with Back Button -->
+          <div style="display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, #14532D 0%, #0E3D26 100%); color: #FFFFFF; padding: 0.9rem 1.25rem; border-radius: var(--radius-lg); margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <span id="startup-current-role-icon" style="font-size: 1.8rem; background: rgba(255,255,255,0.15); border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">👨‍👩‍👧</span>
+              <div>
+                <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--color-accent-200); font-weight: 700; letter-spacing: 0.05em;">
+                  Part 2 of 2: Sign In &amp; Sign Up Phase
+                </div>
+                <div id="startup-current-role-title" style="font-weight: 700; font-size: 1.2rem; color: #FFFFFF;">
+                  Parent &amp; Caregiver Portal
+                </div>
+              </div>
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" onclick="NutriApp.setStartupPhase(1)" style="color: #FFFFFF; border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.12);">
+              ← Change Portal (Back to Part 1)
+            </button>
+          </div>
+
+          <!-- Tabs: Sign In vs Sign Up -->
+          <div class="auth-tabs">
+            <button type="button" class="auth-tab-btn active" id="startup-tab-signin" onclick="NutriApp.switchStartupAuthMode('signin')">
+              🔑 Sign In
+            </button>
+            <button type="button" class="auth-tab-btn" id="startup-tab-signup" onclick="NutriApp.switchStartupAuthMode('signup')">
+              📝 Create New Account (Sign Up)
+            </button>
+          </div>
+
+          <!-- Startup Sign In Form -->
+          <form id="startup-signin-form" onsubmit="NutriApp.submitStartupSignIn(event)">
+            <div class="form-group">
+              <label class="form-label">Email Address or Username:</label>
+              <input type="text" id="startup-login-username" name="loginUsername" class="form-control" required placeholder="name@nutrilearn.ph" value="maria.parent@nutrilearn.ph">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Password:</label>
+              <input type="password" name="loginPassword" class="form-control" required value="password123">
+            </div>
+
+            <button type="submit" id="btn-startup-submit-signin" class="btn btn-accent" style="width: 100%; padding: 0.8rem; font-size: 1rem; font-weight: 700; margin-top: 0.5rem;">
+              Sign In to Enter Parent Portal →
+            </button>
+
+            <!-- 1-Click Quick Demo Login -->
+            <div class="auth-demo-box">
+              <div style="font-size: 0.78rem; color: #166534; font-weight: 600; margin-bottom: 0.35rem;">
+                ⚡ Fast Direct Evaluation (No Typing Needed):
+              </div>
+              <button type="button" class="btn btn-outline btn-sm" id="btn-startup-demo-login" onclick="NutriApp.startupQuickDemoLogin()" style="background:#FFFFFF;">
+                ⚡ 1-Click Demo Login as <strong>Maria Ramos (Parent Demo)</strong>
+              </button>
+            </div>
+          </form>
+
+          <!-- Startup Sign Up Form -->
+          <form id="startup-signup-form" style="display: none;" onsubmit="NutriApp.submitStartupSignUp(event)">
+            <div class="form-group">
+              <label class="form-label">Full Name:</label>
+              <input type="text" name="regName" class="form-control" required placeholder="e.g. Maria Santos">
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">Email or Mobile Number:</label>
+                <input type="text" name="regEmail" class="form-control" required placeholder="e.g. maria@gmail.com">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Password:</label>
+                <input type="password" name="regPassword" class="form-control" required placeholder="Create password">
+              </div>
+            </div>
+
+            <!-- Role-Specific Fields for Parent -->
+            <div id="startup-signup-parent">
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label">Child's Name:</label>
+                  <input type="text" name="regChildName" class="form-control" placeholder="e.g. Ethan Santos">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Child Age in Months (6-59):</label>
+                  <input type="number" name="regChildAge" class="form-control" min="6" max="59" value="18">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Barangay Residence:</label>
+                <select name="regBarangay" class="form-select">
+                  <option value="Barangay San Jose">Barangay San Jose</option>
+                  <option value="Barangay Santa Maria">Barangay Santa Maria</option>
+                  <option value="Barangay San Isidro">Barangay San Isidro</option>
+                  <option value="Barangay Poblacion">Barangay Poblacion</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Role-Specific Fields for BHW -->
+            <div id="startup-signup-bhw" style="display: none;">
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label">BHW Accreditation ID:</label>
+                  <input type="text" name="regBhwId" class="form-control" placeholder="e.g. BHW-2026-4412">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Barangay Assignment:</label>
+                  <select name="regBhwBarangay" class="form-select">
+                    <option value="Barangay San Jose">Barangay San Jose</option>
+                    <option value="Barangay Santa Maria">Barangay Santa Maria</option>
+                    <option value="Barangay San Isidro">Barangay San Isidro</option>
+                    <option value="Barangay Poblacion">Barangay Poblacion</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Role-Specific Fields for Admin -->
+            <div id="startup-signup-mho" style="display: none;">
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label">Office / Department:</label>
+                  <input type="text" name="regMhoDept" class="form-control" value="Municipal Health Office">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Official Designation:</label>
+                  <input type="text" name="regMhoDesignation" class="form-control" placeholder="e.g. Municipal Nutrition Action Officer">
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" id="btn-startup-submit-signup" class="btn btn-accent" style="width: 100%; padding: 0.8rem; font-size: 1rem; font-weight: 700; margin-top: 0.5rem;">
+              Complete Registration &amp; Open Portal
+            </button>
+          </form>
+
+          <div style="text-align: center; margin-top: 1.25rem; font-size: 0.85rem;">
+            <a href="javascript:void(0)" onclick="NutriApp.setStartupPhase(1)" style="color: var(--color-primary-800); font-weight: 700; text-decoration: underline;">
+              ← Want to choose a different portal? Back to Part 1
+            </a>
+          </div>
         </div>
-        <button class="status-sync-btn"
-          onclick="window.app.showToast('Nai-sync sa Tanggapan ng Kalusugan ng Calabanga', 'success')">
-          I-sync
+
+        <div style="text-align: center; margin-top: 1.25rem; font-size: 0.82rem; color: var(--text-muted);">
+          🔒 <strong>Security Gate:</strong> You must sign in to an authorized User Portal before accessing the NutriLearn system.
+        </div>
+      </div>
+    </div>
+  </div><!-- End #startup-auth-screen -->
+
+  <!-- ==========================================================================
+       APPLICATION WORKSPACE (Hidden by default; unlocked ONLY after Login Phase)
+       ========================================================================== -->
+  <div id="app-workspace" style="display: none;">
+    <header class="app-header">
+    <div class="header-container">
+      <!-- Brand Logo & Title -->
+      <div class="brand">
+        <img src="assets/icons/icon-192.svg" alt="NutriLearn Logo" class="brand-icon">
+        <div>
+          <div class="brand-title">NutriLearn</div>
+          <div class="brand-subtitle">Child Health &amp; Nutrition</div>
+        </div>
+      </div>
+
+      <!-- Active Isolated Portal Pill (Shows strictly active portal) -->
+      <div class="active-portal-pill">
+        <span id="active-portal-icon" class="active-portal-pill-icon">👨‍👩‍👧</span>
+        <div>
+          <div id="active-portal-title" class="active-portal-pill-title">Parent Portal</div>
+          <span id="active-portal-tag" class="active-portal-pill-tag">Family Care</span>
+        </div>
+      </div>
+
+      <!-- Header Actions: User Profile, Sign Out & Download Hub -->
+      <div class="header-actions">
+        <!-- User Profile Badge -->
+        <div class="user-profile-badge" id="header-user-btn" onclick="NutriApp.showStartupScreen('role-choice')" title="Click to switch account or portal">
+          <div class="user-avatar-circle" id="header-user-avatar">M</div>
+          <div class="user-badge-details">
+            <span class="user-badge-name" id="header-user-name">Maria Ramos</span>
+            <span class="user-badge-role" id="header-user-role">Parent</span>
+          </div>
+        </div>
+
+        <!-- Sign Out Button -->
+        <button class="btn-signout" onclick="NutriApp.logout()" title="Sign out of NutriLearn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          Sign Out
+        </button>
+
+        <button class="btn-download-app" onclick="NutriApp.openModal('modal-download-app')" id="btn-header-download">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          APK
         </button>
       </div>
-
-      <!-- Main Content Views -->
-      <main class="app-content">
-        <!-- 1. Parent & Caregiver View -->
-        <section id="parent-view" style="display:none;"></section>
-
-        <!-- 2. Barangay Health Worker View -->
-        <section id="chw-view" style="display:none;"></section>
-
-        <!-- 3. Supervisor & Public Health Surveillance View -->
-        <section id="supervisor-view" style="display:none;"></section>
-
-        <!-- Developer Credits Footer -->
-        <footer
-          style="text-align:center; padding:16px 12px 24px 12px; font-size:0.72rem; color:var(--text-muted); border-top:1px solid #e2e8f0; margin-top:20px;">
-          <div>NutriLearn • Bayan ng Calabanga at Barangay Paolbo</div>
-          <div style="margin-top:2px;">Credits to the Owner • Developer: <strong
-              style="color:var(--primary); font-weight:800;">NEXORA</strong></div>
-        </footer>
-      </main>
-
-      <!-- Role-Specific Bottom Navigation Bar -->
-      <nav class="bottom-nav" id="app-bottom-nav">
-        <!-- Injected dynamically via app.js depending on active role -->
-      </nav>
-
     </div>
+  </header>
 
-  </div>
+  <!-- ==========================================================================
+       SUB-NAVIGATION BARS (Strictly isolated by authenticated role)
+       ========================================================================== -->
+  <!-- 1. Parent Sub-Nav (Shown ONLY for Parents) -->
+  <nav class="sub-nav" id="parent-sub-nav">
+    <div class="sub-nav-container">
+      <span class="sub-nav-link active parent-sub-link" data-tab="learning">📚 Learning Modules &amp; Quizzes</span>
+      <span class="sub-nav-link parent-sub-link" data-tab="meal-planner">🍲 Pinggang Pinoy Meal Planner</span>
+      <span class="sub-nav-link parent-sub-link" data-tab="growth-tracker">📈 My Child Growth Record</span>
+    </div>
+  </nav>
 
-  <!-- Global Modal Dialog Container -->
-  <div class="modal-overlay" id="app-modal" onclick="if(event.target === this) window.app.closeModal();">
-    <div class="modal-card">
-      <div class="modal-header">
-        <div style="font-size:0.75rem; font-weight:700; color:var(--primary); text-transform:uppercase;">NutriLearn
-          Calabanga • Barangay Paolbo</div>
-        <button class="modal-close" onclick="window.app.closeModal()">✕</button>
+  <!-- 2. BHW Sub-Nav (Shown ONLY for BHW / BNS) -->
+  <nav class="sub-nav" id="chw-sub-nav" style="display: none;">
+    <div class="sub-nav-container">
+      <span class="sub-nav-link active chw-sub-link" data-tab="registry">📋 Malnutrition Registry</span>
+      <span class="sub-nav-link chw-sub-link" data-tab="calculator">📐 WHO Growth &amp; MUAC Calculator</span>
+      <span class="sub-nav-link chw-sub-link" data-tab="reporting">📤 Submit Reports to MHO</span>
+    </div>
+  </nav>
+
+  <!-- 3. Administrator Sub-Nav (Shown ONLY for Municipal Health Office) -->
+  <nav class="sub-nav" id="mho-sub-nav" style="display: none;">
+    <div class="sub-nav-container">
+      <span class="sub-nav-link active mho-sub-link" data-tab="kpis">🎯 10% Stunting Target &amp; KPIs</span>
+      <span class="sub-nav-link mho-sub-link" data-tab="hotspots">🗺️ Barangay Hotspots &amp; Burden</span>
+      <span class="sub-nav-link mho-sub-link" data-tab="reports">📥 Review &amp; Endorse BHW Reports</span>
+      <span class="sub-nav-link mho-sub-link" data-tab="guidelines">📜 WHO &amp; SDG Nutrition Guidelines</span>
+    </div>
+  </nav>
+
+  <!-- ==========================================================================
+       MAIN CONTENT CONTAINER
+       ========================================================================== -->
+  <main class="main-content">
+
+    <!-- ==========================================================================
+         VIEW 1: PARENTS PORTAL
+         ========================================================================== -->
+    <section id="view-parent" class="view-section active">
+      <!-- Hero Banner -->
+      <div class="hero-banner">
+        <div class="hero-text">
+          <h1>Empowering Parents for Healthy Child Growth</h1>
+          <p>
+            Learn evidence-based nutrition using affordable Filipino staples like Malunggay, Monggo, Camote, and Dilis. Protect your child from stunting and build a strong future!
+          </p>
+          <div class="hero-meta">
+            <div class="hero-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+              Self-Paced Learning
+            </div>
+            <div class="hero-badge hero-badge-highlight">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              Target: 10% Stunting Reduction
+            </div>
+            <div class="hero-badge">
+              <span>🇵🇭 Local Affordable Foods</span>
+            </div>
+          </div>
+        </div>
       </div>
-      <div id="modal-content-area"></div>
+
+      <!-- Tab Pane 1: Learning Modules -->
+      <div class="parent-tab-pane" data-tab="learning">
+        <!-- Progress Bar Card -->
+        <div class="card" style="margin-bottom: 1.75rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.65rem; flex-wrap:wrap; gap:0.5rem;">
+            <div>
+              <strong style="color:var(--color-primary-900); font-size:1.05rem;">My Learning Progress</strong>
+              <div id="parent-progress-text" style="font-size:0.85rem; color:var(--text-muted);">1 of 5 Modules Completed (20%)</div>
+            </div>
+            <span id="parent-progress-badge" class="badge badge-improved">Progressing Well</span>
+          </div>
+          <div class="kpi-progress-bar">
+            <div id="parent-progress-fill" class="kpi-progress-fill" style="width: 20%;"></div>
+          </div>
+        </div>
+
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Nutrition Education Curriculum</h2>
+            <p class="card-subtitle">Complete lessons, test your knowledge, and earn your Community Nutrition Certificate.</p>
+          </div>
+        </div>
+
+        <!-- Modules Grid -->
+        <div class="module-card-grid" id="parent-modules-container">
+          <!-- Populated by parentLearning.js -->
+        </div>
+      </div>
+
+      <!-- Tab Pane 2: Pinggang Pinoy Meal Planner -->
+      <div class="parent-tab-pane" data-tab="meal-planner" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Pinggang Pinoy: Local &amp; Affordable Meal Planner</h2>
+              <p class="card-subtitle">Healthy plates under ₱35–₱50 per serving using local backyard foods.</p>
+            </div>
+          </div>
+
+          <div class="grid-2" style="align-items: center; margin-bottom: 2rem;">
+            <!-- Interactive Plate Visualizer -->
+            <div style="text-align: center;">
+              <div class="plate-visualizer">
+                <div class="plate-section plate-go">
+                  <span>🟡 GO (1/4)</span>
+                  <span style="font-size:0.65rem; opacity:0.9;">Rice / Camote</span>
+                </div>
+                <div class="plate-section plate-grow">
+                  <span>🔴 GROW (1/4)</span>
+                  <span style="font-size:0.65rem; opacity:0.9;">Monggo / Egg / Dilis</span>
+                </div>
+                <div class="plate-section plate-glow">
+                  <span>🟢 GLOW (1/2)</span>
+                  <span style="font-size:0.65rem; opacity:0.9;">Malunggay / Kalabasa / Papaya</span>
+                </div>
+              </div>
+              <p style="font-size:0.82rem; color:var(--text-muted);">
+                <strong>Golden Rule:</strong> Half of the plate should always be colorful fruits and leafy green vegetables!
+              </p>
+            </div>
+
+            <!-- Custom Meal Cost Calculator -->
+            <div style="background: var(--bg-surface-subtle); padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid var(--border-light);">
+              <h3 style="font-size: 1.05rem; color: var(--color-primary-900); margin-bottom: 0.75rem;">Build Your Budget Meal:</h3>
+              
+              <div class="form-group">
+                <label class="form-label">🟡 Pick GO Food (Energy):</label>
+                <select id="meal-builder-go" class="form-select">
+                  <option value="camote" data-cost="8">Boiled Yellow Camote (Sweet Potato) - ₱8</option>
+                  <option value="rice" data-cost="10">White Rice (Lugaw or Steamed) - ₱10</option>
+                  <option value="corn" data-cost="9">Boiled Yellow Corn (Mais) - ₱9</option>
+                  <option value="saba" data-cost="7">Boiled Saba Banana - ₱7</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">🔴 Pick GROW Food (Protein &amp; Calcium):</label>
+                <select id="meal-builder-grow" class="form-select">
+                  <option value="monggo" data-cost="12">Mung Beans (Monggo) Mash - ₱12</option>
+                  <option value="egg" data-cost="10">Hardboiled Egg Yolk - ₱10</option>
+                  <option value="dilis" data-cost="8">Powdered Dried Dilis (Anchovies) - ₱8</option>
+                  <option value="tilapia" data-cost="18">Steamed Fresh Tilapia Flakes - ₱18</option>
+                  <option value="tofu" data-cost="8">Fresh Soya Bean Curd (Tofu/Tokwa) - ₱8</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">🟢 Pick GLOW Food (Vitamins &amp; Minerals):</label>
+                <select id="meal-builder-glow" class="form-select">
+                  <option value="malunggay" data-cost="3">Fresh Malunggay Leaves (Backyard) - ₱3</option>
+                  <option value="kalabasa" data-cost="6">Steamed Kalabasa (Squash) - ₱6</option>
+                  <option value="papaya" data-cost="5">Mashed Ripe Papaya - ₱5</option>
+                  <option value="kangkong" data-cost="4">Blanched Kangkong Tips - ₱4</option>
+                </select>
+              </div>
+
+              <div style="background:#FFFFFF; border:1.5px solid var(--color-accent-400); border-radius:var(--radius-md); padding:1rem; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <div style="font-size:0.78rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Estimated Cost:</div>
+                  <div id="meal-calc-total" style="font-size:1.35rem; font-weight:800; color:var(--color-primary-800);">₱23 per serving</div>
+                </div>
+                <span class="badge badge-improved">100% Balanced</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recipe Card Library -->
+          <h3 style="font-size: 1.15rem; color: var(--color-primary-900); margin-bottom: 1rem;">Tested Low-Cost Community Recipes</h3>
+          <div class="grid-2" id="recipes-container">
+            <!-- Populated by parentLearning.js -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Pane 3: Child Growth Tracker -->
+      <div class="parent-tab-pane" data-tab="growth-tracker" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Child Growth &amp; Feeding Log</h2>
+              <p class="card-subtitle">Keep track of your child's monthly measurements recorded by community health workers.</p>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="NutriApp.switchRole('chw')">
+              Ask Health Worker to Update
+            </button>
+          </div>
+
+          <div style="background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.5rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+              <div>
+                <span style="font-size:0.8rem; color:#15803D; font-weight:700; text-transform:uppercase;">Current Registered Child:</span>
+                <h3 style="font-size:1.45rem; color:#0E3D26; margin:0.2rem 0;">Ethan Kyle Ramos (18 months)</h3>
+                <p style="font-size:0.85rem; color:#374151;">Barangay San Jose • Monitored by Sister Teresa Lim, BNS</p>
+              </div>
+              <div>
+                <span class="badge badge-underweight" style="font-size:0.9rem; padding:0.4rem 0.9rem;">
+                  Under Progress Monitoring
+                </span>
+              </div>
+            </div>
+
+            <div class="grid-3" style="margin-top: 1.25rem;">
+              <div style="background:#FFFFFF; padding:1rem; border-radius:8px; border:1px solid #E2E8F0;">
+                <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">HEIGHT-FOR-AGE:</div>
+                <div style="font-size:1.25rem; font-weight:700; color:#EF4444; margin:0.25rem 0;">74.2 cm</div>
+                <div style="font-size:0.75rem; color:var(--text-muted);">Target: &gt; 76.9 cm (Improving)</div>
+              </div>
+              <div style="background:#FFFFFF; padding:1rem; border-radius:8px; border:1px solid #E2E8F0;">
+                <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">WEIGHT-FOR-AGE:</div>
+                <div style="font-size:1.25rem; font-weight:700; color:#F59E0B; margin:0.25rem 0;">8.4 kg</div>
+                <div style="font-size:0.75rem; color:var(--text-muted);">Target: &gt; 8.8 kg</div>
+              </div>
+              <div style="background:#FFFFFF; padding:1rem; border-radius:8px; border:1px solid #E2E8F0;">
+                <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">MUAC CIRCUMFERENCE:</div>
+                <div style="font-size:1.25rem; font-weight:700; color:#10B981; margin:0.25rem 0;">118 mm (Yellow Band)</div>
+                <div style="font-size:0.75rem; color:var(--text-muted);">Normal starts at 125 mm</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         VIEW 2: COMMUNITY HEALTH WORKER (CHW / BNS / BHW) TOOLS
+         ========================================================================== -->
+    <section id="view-chw" class="view-section">
+      <!-- Hero Banner -->
+      <div class="hero-banner">
+        <div class="hero-text">
+          <h1>Community Malnutrition Tracking &amp; Registry</h1>
+          <p>
+            Document child anthropometric data, classify nutritional status according to WHO standards, track recovered children, and submit verified reports to the Municipal Health Office.
+          </p>
+          <div class="hero-meta">
+            <div class="hero-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
+              Automated MHO Submission
+            </div>
+            <div class="hero-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+              Real-time WHO Classification
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Pane 1: Malnutrition Registry -->
+      <div class="chw-tab-pane" data-tab="registry">
+        <!-- CHW Stats Bar -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">Total Monitored</span>
+              <div class="kpi-icon">👶</div>
+            </div>
+            <div class="kpi-value" id="chw-stat-total">0</div>
+            <div class="kpi-subtitle">Children registered</div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">Stunted (Low Height)</span>
+              <div class="kpi-icon" style="background:#FEF2F2; color:#991B1B;">⚠️</div>
+            </div>
+            <div class="kpi-value" style="color:#EF4444;" id="chw-stat-stunted">0</div>
+            <div class="kpi-subtitle">Target: 10% reduction</div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">Wasted (Low Weight)</span>
+              <div class="kpi-icon" style="background:#FFF7ED; color:#C2410C;">⚡</div>
+            </div>
+            <div class="kpi-value" style="color:#C2410C;" id="chw-stat-wasted">0</div>
+            <div class="kpi-subtitle">Acute malnutrition</div>
+          </div>
+
+          <div class="kpi-card highlight-target">
+            <div class="kpi-header">
+              <span class="kpi-title">Improved &amp; Recovered</span>
+              <div class="kpi-icon" style="background:#DCFCE7; color:#166534;">🌟</div>
+            </div>
+            <div class="kpi-value" style="color:#16A34A;" id="chw-stat-improved">0</div>
+            <div class="kpi-subtitle">Nutritional recovery</div>
+          </div>
+        </div>
+
+        <!-- Registry Table Card -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Community Child &amp; Parent Registry</h2>
+              <p class="card-subtitle">Keep records updated to monitor individual progress and submit accurate data to higher-ups.</p>
+            </div>
+            <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+              <button class="btn btn-outline btn-sm" onclick="NutriExport.exportChildrenCSV()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                Export CSV
+              </button>
+              <button class="btn btn-accent btn-sm" onclick="NutriApp.openModal('modal-add-child')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                + Register New Child
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter & Search Bar -->
+          <div class="filter-bar">
+            <div class="search-input-wrapper">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input type="text" id="chw-search-input" class="form-control" placeholder="Search by child name, parent, or barangay...">
+            </div>
+
+            <select id="chw-filter-status" class="form-select" style="width: auto; min-width: 150px;">
+              <option value="ALL">All Statuses</option>
+              <option value="STUNTED">Stunted Only</option>
+              <option value="WASTED">Wasted Only</option>
+              <option value="UNDERWEIGHT">Underweight Only</option>
+              <option value="NORMAL">Normal Growth</option>
+              <option value="IMPROVED">Improved / Recovered</option>
+            </select>
+
+            <select id="chw-filter-barangay" class="form-select" style="width: auto; min-width: 170px;">
+              <option value="ALL">All Barangays</option>
+              <option value="Barangay San Jose">Barangay San Jose</option>
+              <option value="Barangay Santa Maria">Barangay Santa Maria</option>
+              <option value="Barangay San Isidro">Barangay San Isidro</option>
+              <option value="Barangay Poblacion">Barangay Poblacion</option>
+            </select>
+          </div>
+
+          <!-- Registry Table -->
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Child Name &amp; Age</th>
+                  <th>Parent / Caregiver</th>
+                  <th>Barangay</th>
+                  <th>Anthropometrics (Ht / Wt / MUAC)</th>
+                  <th>Nutritional Status</th>
+                  <th>Learning Progress</th>
+                  <th>Last Assessed</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="chw-registry-tbody">
+                <!-- Populated by healthWorker.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Pane 2: WHO Growth Calculator -->
+      <div class="chw-tab-pane" data-tab="calculator" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Interactive WHO Anthropometric &amp; MUAC Calculator</h2>
+              <p class="card-subtitle">Instant field classification for child Height-for-Age, Weight-for-Age, and MUAC.</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <!-- Input Form -->
+            <div style="background: var(--bg-surface-subtle); padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid var(--border-light);">
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label">Child Age (Months):</label>
+                  <input type="number" id="calc-age" class="form-control" value="18" min="6" max="59">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Sex:</label>
+                  <select id="calc-sex" class="form-select">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label">Height (Length in cm):</label>
+                  <input type="number" id="calc-height" class="form-control" value="74.5" step="0.1">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Weight (kg):</label>
+                  <input type="number" id="calc-weight" class="form-control" value="8.5" step="0.1">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  MUAC (Mid-Upper Arm Circumference in mm):
+                  <span id="calc-muac-val" style="float:right; font-weight:700; color:var(--color-primary-800);">120 mm</span>
+                </label>
+                <input type="range" id="calc-muac" class="form-control" min="90" max="160" value="120" style="padding:0.25rem 0;">
+                
+                <!-- Visual MUAC Tape -->
+                <div class="muac-tape-indicator">
+                  <div class="muac-zone red" title="Severe (< 115mm)">SAM &lt;115</div>
+                  <div class="muac-zone yellow" title="Moderate (115 - 124mm)">MAM 115-124</div>
+                  <div class="muac-zone green" title="Normal (&gt;= 125mm)">Normal &ge;125</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Instant Classification Display -->
+            <div id="calc-result-display" class="calculator-result-box" style="display:flex; flex-direction:column; justify-content:center;">
+              <!-- Populated dynamically by healthWorker.js -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Pane 3: Reporting to Higher-ups -->
+      <div class="chw-tab-pane" data-tab="reporting" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Automated Malnutrition Data Reporting</h2>
+              <p class="card-subtitle">Compile and electronically submit community malnutrition records directly to the Municipal Health Office.</p>
+            </div>
+            <button class="btn btn-accent" onclick="CHWModule.openReportModal()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"></path><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              Prepare &amp; Submit Barangay Report
+            </button>
+          </div>
+
+          <div style="background: #F8FAF8; border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.5rem;">
+            <h3 style="font-size:1.1rem; color:var(--color-primary-900); margin-bottom:0.5rem;">How Reporting to Higher-Ups Works:</h3>
+            <p style="font-size:0.88rem; color:var(--text-secondary); line-height:1.6;">
+              When health workers record child measurements and improvement milestones, NutriLearn automatically aggregates stunting rates, recovery statistics, and parent education metrics. With one click, an official electronic report is submitted to the Municipal Health Office system without cumbersome manual paperwork, enabling fast evidence-based resource allocation.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         VIEW 3: MUNICIPAL HEALTH OFFICE (MHO / HIGHER-UPS) DASHBOARD
+         ========================================================================== -->
+    <section id="view-mho" class="view-section">
+      <!-- Hero Banner -->
+      <div class="hero-banner">
+        <div class="hero-text">
+          <h1>Municipal Nutrition Intelligence &amp; SDG Tracking</h1>
+          <p>
+            Official dashboard for Municipal Health Officers, nutrition program supervisors, and regional data collectors. Monitoring progress toward the <strong>10% annual child stunting reduction benchmark</strong>.
+          </p>
+          <div class="hero-meta">
+            <div class="hero-badge hero-badge-highlight">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              WHO &amp; PIDS 10% Stunting Benchmark
+            </div>
+            <div class="hero-badge">
+              <span>🏛️ Municipal Health Office Central Registry</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Pane 1: Executive KPIs & Distribution Overview -->
+      <div class="mho-tab-pane" data-tab="kpis">
+        <!-- Executive KPIs Grid -->
+        <div class="kpi-grid">
+          <div class="kpi-card highlight-target">
+            <div class="kpi-header">
+              <span class="kpi-title">10% Stunting Reduction Goal</span>
+              <div class="kpi-icon" style="background:#DCFCE7; color:#166534;">🎯</div>
+            </div>
+            <div class="kpi-value" id="mho-kpi-target-progress">0%</div>
+            <div class="kpi-subtitle">Progress toward 10% reduction benchmark</div>
+            <div class="kpi-progress-bar">
+              <div class="kpi-progress-fill" id="mho-kpi-target-bar" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">Current Stunting Rate</span>
+              <div class="kpi-icon" style="background:#FEF2F2; color:#991B1B;">📉</div>
+            </div>
+            <div class="kpi-value" style="color:#EF4444;" id="mho-kpi-stunting-rate">0.0%</div>
+            <div class="kpi-subtitle">Community stunting prevalence</div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">Total Monitored</span>
+              <div class="kpi-icon">📋</div>
+            </div>
+            <div class="kpi-value" id="mho-kpi-total">0</div>
+            <div class="kpi-subtitle">Enrolled infants &amp; toddlers</div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">Children Recovered</span>
+              <div class="kpi-icon" style="background:#DCFCE7; color:#166534;">🌱</div>
+            </div>
+            <div class="kpi-value" style="color:#16A34A;" id="mho-kpi-improved">0</div>
+            <div class="kpi-subtitle">Graduated to normal trajectory</div>
+          </div>
+        </div>
+
+        <!-- Malnutrition Distribution Bar -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Nutritional Distribution Overview</h2>
+              <p class="card-subtitle">Aggregate breakdown of child nutritional classifications across all pilot communities.</p>
+            </div>
+          </div>
+          <div style="height: 24px; display: flex; border-radius: var(--radius-full); overflow: hidden; margin-bottom: 1rem; border: 1px solid var(--border-light);">
+            <div id="dist-bar-stunted" style="background:#EF4444; width:30%;" title="Stunted"></div>
+            <div id="dist-bar-wasted" style="background:#F97316; width:15%;" title="Wasted"></div>
+            <div id="dist-bar-underweight" style="background:#F59E0B; width:20%;" title="Underweight"></div>
+            <div id="dist-bar-normal" style="background:#10B981; width:25%;" title="Normal"></div>
+            <div id="dist-bar-improved" style="background:#059669; width:10%;" title="Improved"></div>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:1.25rem; font-size:0.82rem; color:var(--text-secondary);">
+            <div style="display:flex; align-items:center; gap:6px;"><span style="width:12px; height:12px; background:#EF4444; border-radius:2px;"></span> Stunted (Low Ht)</div>
+            <div style="display:flex; align-items:center; gap:6px;"><span style="width:12px; height:12px; background:#F97316; border-radius:2px;"></span> Wasted (Low Wt)</div>
+            <div style="display:flex; align-items:center; gap:6px;"><span style="width:12px; height:12px; background:#F59E0B; border-radius:2px;"></span> Underweight</div>
+            <div style="display:flex; align-items:center; gap:6px;"><span style="width:12px; height:12px; background:#10B981; border-radius:2px;"></span> Normal</div>
+            <div style="display:flex; align-items:center; gap:6px;"><span style="width:12px; height:12px; background:#059669; border-radius:2px;"></span> Improved / Recovered</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Pane 2: Barangay Hotspot Analysis -->
+      <div class="mho-tab-pane" data-tab="hotspots" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Barangay-Level Stunting Hotspots</h2>
+              <p class="card-subtitle">Prioritize community resources to areas with the highest stunting burden.</p>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Barangay Name</th>
+                  <th>Total Monitored</th>
+                  <th>Stunted Children</th>
+                  <th>Recovered Count</th>
+                  <th>Stunting Rate</th>
+                  <th>Intervention Priority</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="mho-barangay-tbody">
+                <!-- Populated by mhoDashboard.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Pane 3: Submitted Reports Queue -->
+      <div class="mho-tab-pane" data-tab="reports" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Incoming Community Reports from Health Workers</h2>
+              <p class="card-subtitle">Official data submissions awaiting Municipal Health Office verification and endorsement.</p>
+            </div>
+            <div style="display:flex; gap:0.5rem;">
+              <button class="btn btn-outline btn-sm" onclick="NutriExport.exportReportsCSV()">
+                Export Reports CSV
+              </button>
+              <button class="btn btn-primary btn-sm" onclick="NutriExport.printOfficialSummary()">
+                Print Official Summary
+              </button>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Report ID</th>
+                  <th>Barangay &amp; CHW Lead</th>
+                  <th>Date Submitted</th>
+                  <th>Children Data</th>
+                  <th>Stunting Rate</th>
+                  <th>Review Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="mho-reports-tbody">
+                <!-- Populated by mhoDashboard.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Pane 4: WHO / SDG Guidelines Manager -->
+      <div class="mho-tab-pane" data-tab="guidelines" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">WHO &amp; SDG Nutrition Policy Standards</h2>
+              <p class="card-subtitle">Standard guidelines updated for local community health workers.</p>
+            </div>
+          </div>
+          <div id="mho-guidelines-container">
+            <!-- Populated by mhoDashboard.js -->
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==========================================================================
+       APP FOOTER
+       ========================================================================== -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <div>
+        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.35rem;">
+          <img src="assets/icons/icon-192.svg" alt="NutriLearn" style="width:24px; height:24px; border-radius:4px;">
+          <strong style="color:#FFFFFF; font-size:1rem;">NutriLearn</strong>
+        </div>
+        <p style="font-size:0.8rem; color:var(--text-on-dark-muted); max-width:480px;">
+          Evidence-based community e-learning &amp; malnutrition monitoring platform. Aligned with WHO Global Nutrition Targets and Philippine Plan of Action for Nutrition (PPAN).
+        </p>
+      </div>
+
+      <ul class="footer-links">
+        <li><a href="#" onclick="NutriApp.openModal('modal-download-app'); return false;">Download APK</a></li>
+        <li><a href="#" onclick="NutriApp.openModal('modal-download-app'); return false;">Windows App</a></li>
+        <li><a href="#" onclick="NutriExport.printOfficialSummary(); return false;">Print Report</a></li>
+      </ul>
+    </div>
+  </footer>
+  </div><!-- End #app-workspace -->
+
+  <!-- ==========================================================================
+       MODALS
+       ========================================================================== -->
+
+  <!-- 0. User Authentication Modal (Phase 1: 3-Role Choice, Phase 2: Sign In / Sign Up) -->
+  <div id="modal-auth" class="modal-backdrop">
+    <div class="modal-dialog" style="max-width: 680px;">
+      <div class="modal-header">
+        <div class="modal-title" id="auth-modal-title">Choose Your User Portal</div>
+        <button class="modal-close-btn" onclick="NutriApp.closeModal('modal-auth')">&times;</button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- PHASE 1: ROLE CHOICE (Parent, BHW, Administrator) -->
+        <div id="auth-phase-role-choice">
+          <div style="text-align: center; margin-bottom: 1.5rem;">
+            <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-primary-700); font-weight: 700;">
+              Welcome to NutriLearn
+            </div>
+            <h2 style="font-family: var(--font-heading); font-size: 1.45rem; color: var(--color-primary-900); margin: 0.35rem 0;">
+              Choose Your Portal to Proceed
+            </h2>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); max-width: 500px; margin: 0 auto;">
+              Select your role to sign in or create an account tailored to your community nutrition responsibilities:
+            </p>
+          </div>
+
+          <!-- 3 Options of Sign In -->
+          <div class="auth-roles-grid">
+            <!-- Option 1: Parent -->
+            <div class="auth-role-card" onclick="NutriApp.selectAuthRole('parent')" id="auth-card-parent">
+              <div>
+                <div class="auth-role-icon">👨‍👩‍👧</div>
+                <div class="auth-role-title">Parent</div>
+                <p class="auth-role-desc">
+                  Access self-paced nutrition lessons, Pinggang Pinoy meal builders, and track child growth trajectories.
+                </p>
+              </div>
+              <button class="btn btn-primary btn-sm" style="width: 100%;">
+                Select Parent Portal →
+              </button>
+            </div>
+
+            <!-- Option 2: BHW -->
+            <div class="auth-role-card" onclick="NutriApp.selectAuthRole('chw')" id="auth-card-chw">
+              <div>
+                <div class="auth-role-icon">🩺</div>
+                <div class="auth-role-title">BHW / BNS</div>
+                <p class="auth-role-desc">
+                  Register malnourished children, compute WHO anthropometrics, track recovery, and submit reports to MHO.
+                </p>
+              </div>
+              <button class="btn btn-primary btn-sm" style="width: 100%;">
+                Select BHW Portal →
+              </button>
+            </div>
+
+            <!-- Option 3: Administrator -->
+            <div class="auth-role-card" onclick="NutriApp.selectAuthRole('mho')" id="auth-card-mho">
+              <div>
+                <div class="auth-role-icon">🏛️</div>
+                <div class="auth-role-title">Administrator</div>
+                <p class="auth-role-desc">
+                  Municipal Health Office intelligence, 10% child stunting reduction benchmark tracking, and official approvals.
+                </p>
+              </div>
+              <button class="btn btn-primary btn-sm" style="width: 100%;">
+                Select Admin Portal →
+              </button>
+            </div>
+          </div>
+
+          <div style="text-align: center; margin-top: 1rem; font-size: 0.82rem; color: var(--text-muted);">
+            💡 Switching roles is instant and preserves all local community registry data.
+          </div>
+        </div>
+
+        <!-- PHASE 2: SIGN IN & SIGN UP FOR CHOSEN ROLE -->
+        <div id="auth-phase-form" style="display: none;">
+          <!-- Selected Role Banner -->
+          <div class="auth-role-banner">
+            <div style="display: flex; align-items: center; gap: 0.65rem;">
+              <span id="auth-current-role-icon" style="font-size: 1.4rem;">👨‍👩‍👧</span>
+              <div>
+                <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--color-accent-200); font-weight: 700;">Selected Portal</div>
+                <div id="auth-current-role-tag" style="font-weight: 700; font-size: 1.05rem;">Parent / Caregiver Portal</div>
+              </div>
+            </div>
+            <button class="btn btn-outline btn-sm" style="color: #FFFFFF; border-color: rgba(255,255,255,0.4);" onclick="NutriApp.setAuthPhase('role-choice')">
+              ← Change Role
+            </button>
+          </div>
+
+          <!-- Auth Mode Tabs (Sign In vs Sign Up) -->
+          <div class="auth-tabs">
+            <button type="button" class="auth-tab-btn active" id="tab-btn-signin" onclick="NutriApp.switchAuthMode('signin')">
+              Sign In
+            </button>
+            <button type="button" class="auth-tab-btn" id="tab-btn-signup" onclick="NutriApp.switchAuthMode('signup')">
+              Create New Account (Sign Up)
+            </button>
+          </div>
+
+          <!-- SIGN IN FORM -->
+          <form id="auth-signin-form" onsubmit="NutriApp.submitSignIn(event)">
+            <div class="form-group">
+              <label class="form-label">Email Address or Username:</label>
+              <input type="text" name="loginUsername" class="form-control" required placeholder="e.g. maria.parent@nutrilearn.ph" value="maria.parent@nutrilearn.ph">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Password:</label>
+              <input type="password" name="loginPassword" class="form-control" required value="password123">
+            </div>
+
+            <button type="submit" class="btn btn-accent" style="width: 100%; padding: 0.75rem; font-size: 0.98rem; margin-top: 0.5rem;">
+              Sign In to NutriLearn
+            </button>
+
+            <!-- 1-Click Demo Shortcut -->
+            <div class="auth-demo-box">
+              <div style="font-size: 0.78rem; color: #166534; font-weight: 600; margin-bottom: 0.35rem;">
+                Testing or Demonstrating the Platform?
+              </div>
+              <button type="button" class="btn btn-outline btn-sm" id="btn-quick-demo-login" onclick="NutriApp.quickDemoLogin()" style="background:#FFFFFF;">
+                ⚡ 1-Click Quick Demo Login
+              </button>
+            </div>
+          </form>
+
+          <!-- SIGN UP FORM -->
+          <form id="auth-signup-form" style="display: none;" onsubmit="NutriApp.submitSignUp(event)">
+            <div class="form-group">
+              <label class="form-label">Full Name:</label>
+              <input type="text" name="regName" class="form-control" required placeholder="e.g. Juanita Dela Cruz">
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">Email or Phone Number:</label>
+                <input type="text" name="regEmail" class="form-control" required placeholder="e.g. juanita@gmail.com">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Password:</label>
+                <input type="password" name="regPassword" class="form-control" required placeholder="Create password">
+              </div>
+            </div>
+
+            <!-- Role-Specific Fields for Parent -->
+            <div id="signup-fields-parent">
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label">Child's Full Name:</label>
+                  <input type="text" name="regChildName" class="form-control" placeholder="e.g. Mateo Dela Cruz">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Child Age in Months (6-59):</label>
+                  <input type="number" name="regChildAge" class="form-control" min="6" max="59" value="14">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Barangay Residence:</label>
+                <select name="regBarangay" class="form-select">
+                  <option value="Barangay San Jose">Barangay San Jose</option>
+                  <option value="Barangay Santa Maria">Barangay Santa Maria</option>
+                  <option value="Barangay San Isidro">Barangay San Isidro</option>
+                  <option value="Barangay Poblacion">Barangay Poblacion</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Role-Specific Fields for BHW -->
+            <div id="signup-fields-bhw" style="display: none;">
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label">BHW Accreditation ID:</label>
+                  <input type="text" name="regBhwId" class="form-control" placeholder="e.g. BHW-2026-9901">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Barangay Assignment:</label>
+                  <select name="regBhwBarangay" class="form-select">
+                    <option value="Barangay San Jose">Barangay San Jose</option>
+                    <option value="Barangay Santa Maria">Barangay Santa Maria</option>
+                    <option value="Barangay San Isidro">Barangay San Isidro</option>
+                    <option value="Barangay Poblacion">Barangay Poblacion</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Role-Specific Fields for Admin -->
+            <div id="signup-fields-mho" style="display: none;">
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label">Office / Department:</label>
+                  <input type="text" name="regMhoDept" class="form-control" value="Municipal Health Office">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Official Designation:</label>
+                  <input type="text" name="regMhoDesignation" class="form-control" placeholder="e.g. Nutrition Officer II">
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-accent" style="width: 100%; padding: 0.75rem; font-size: 0.98rem; margin-top: 0.5rem;">
+              Complete Registration &amp; Sign In
+            </button>
+          </form>
+        </div>
+
+      </div>
     </div>
   </div>
 
-  <!-- Global Toast Notification Container -->
-  <div class="toast-container" id="toast-container"></div>
+  <!-- 1. Download App Hub Modal (Android APK & Windows Compatibility) -->
+  <div id="modal-download-app" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">Download NutriLearn App</div>
+        <button class="modal-close-btn" onclick="NutriApp.closeModal('modal-download-app')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:1.25rem;">
+          NutriLearn is compatible with both <strong>Windows</strong> and <strong>Android</strong> devices. Choose your preferred installation option:
+        </p>
 
-  <!-- Application Logic Scripts -->
-  <script src="js/storage.js"></script>
-  <script src="js/parent-portal.js"></script>
-  <script src="js/chw-toolkit.js"></script>
-  <script src="js/supervisor-dashboard.js"></script>
-  <script src="js/app.js"></script>
+        <!-- Android APK Download Option -->
+        <div class="download-card" style="cursor:pointer;" onclick="NutriApp.downloadAndroidAPK()">
+          <div class="download-card-icon" style="background:#16A34A;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+          </div>
+          <div style="flex:1;">
+            <strong style="color:var(--color-primary-900); font-size:1.05rem; display:block;">Download Android APK (.apk)</strong>
+            <span style="font-size:0.82rem; color:var(--text-secondary); display:block; margin-top:2px;">
+              Direct APK installation file for Android smartphones &amp; tablets.
+            </span>
+          </div>
+          <button class="btn btn-accent btn-sm">Download</button>
+        </div>
 
+        <!-- Windows Desktop App Launcher -->
+        <div class="download-card" style="cursor:pointer;" onclick="NutriApp.downloadWindowsApp()">
+          <div class="download-card-icon" style="background:#0F766E;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+          </div>
+          <div style="flex:1;">
+            <strong style="color:var(--color-primary-900); font-size:1.05rem; display:block;">Download Windows Launcher (.bat)</strong>
+            <span style="font-size:0.82rem; color:var(--text-secondary); display:block; margin-top:2px;">
+              1-click desktop standalone app launcher for Windows 10/11.
+            </span>
+          </div>
+          <button class="btn btn-primary btn-sm">Download</button>
+        </div>
+
+        <!-- Instant PWA Install Option -->
+        <div class="download-card" style="cursor:pointer;" onclick="NutriApp.promptPWAInstall()">
+          <div class="download-card-icon" style="background:#0E3D26;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          </div>
+          <div style="flex:1;">
+            <strong style="color:var(--color-primary-900); font-size:1.05rem; display:block;">Install as Web App (PWA)</strong>
+            <span style="font-size:0.82rem; color:var(--text-secondary); display:block; margin-top:2px;">
+              Install instantly to your desktop or phone home screen without app stores.
+            </span>
+          </div>
+          <button class="btn btn-outline btn-sm">Install</button>
+        </div>
+
+        <div style="background:#F0FDF4; border:1px solid #BBF7D0; border-radius:8px; padding:0.85rem; font-size:0.8rem; color:#14532D; margin-top:1rem;">
+          💡 <strong>Tip for Android Users:</strong> You can open this web application in Chrome and tap <em>"Add to Home Screen"</em> to use it offline like a native app.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Lesson Reader Modal -->
+  <div id="modal-lesson-viewer" class="modal-backdrop">
+    <div class="modal-dialog" style="max-width: 720px;">
+      <div class="modal-header">
+        <div class="modal-title" id="lesson-title">Lesson Title</div>
+        <button class="modal-close-btn" onclick="NutriApp.closeModal('modal-lesson-viewer')">&times;</button>
+      </div>
+      <div class="modal-body" id="lesson-body-content" style="line-height: 1.65; color: var(--text-secondary);">
+        <!-- Populated by parentLearning.js -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="NutriApp.closeModal('modal-lesson-viewer')">Close</button>
+        <button class="btn btn-accent" onclick="ParentModule.startQuiz(ParentModule.currentModuleId)">
+          Take Module Quiz →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Interactive Quiz Modal -->
+  <div id="modal-quiz" class="modal-backdrop">
+    <div class="modal-dialog" style="max-width: 660px;">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title" id="quiz-mod-title">Module Knowledge Check</div>
+          <span id="quiz-q-counter" style="font-size:0.78rem; color:var(--text-muted);">Question 1 of 3</span>
+        </div>
+        <button class="modal-close-btn" onclick="NutriApp.closeModal('modal-quiz')">&times;</button>
+      </div>
+      <div class="modal-body" id="quiz-content-area">
+        <!-- Populated by parentLearning.js -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-accent" id="btn-quiz-submit" onclick="ParentModule.verifyCurrentAnswer()">
+          Verify Answer
+        </button>
+        <button class="btn btn-primary" id="btn-quiz-next" style="display:none;" onclick="ParentModule.nextQuestion()">
+          Next Question →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Certificate of Completion Modal -->
+  <div id="modal-certificate" class="modal-backdrop">
+    <div class="modal-dialog" style="max-width: 600px; text-align: center;">
+      <div class="modal-header" style="justify-content: center; background: #0E3D26; color: #FFFFFF;">
+        <div class="modal-title" style="color: #FFFFFF;">🏆 Certificate of Nutrition Knowledge</div>
+      </div>
+      <div class="modal-body" style="padding: 2.5rem 2rem;">
+        <div style="font-size:0.85rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--color-primary-700); font-weight:700; margin-bottom:0.5rem;">
+          NutriLearn Community Health Initiative
+        </div>
+        <h3 style="font-family:var(--font-heading); font-size:1.6rem; color:var(--color-primary-900); margin-bottom:0.75rem;">
+          Certificate of Parent Mastery
+        </h3>
+        <p style="font-size:0.92rem; color:var(--text-secondary); line-height:1.5;">
+          This certifies that you have successfully completed the evidence-based curriculum and scored:
+        </p>
+        <div id="cert-score" style="font-family:var(--font-heading); font-size:2rem; font-weight:800; color:#16A34A; margin:0.85rem 0;">
+          100%
+        </div>
+        <div id="cert-module-name" style="font-weight:700; color:var(--color-primary-900); font-size:1.05rem;">
+          Module 1: Understanding Malnutrition &amp; Stunting
+        </div>
+        <p style="font-size:0.82rem; color:var(--text-muted); margin-top:1.25rem;">
+          Awarded on <span id="cert-date">Date</span> • Verified for Community Stunting Prevention
+        </p>
+      </div>
+      <div class="modal-footer" style="justify-content: center;">
+        <button class="btn btn-outline" onclick="NutriApp.closeModal('modal-certificate')">Continue Learning</button>
+        <button class="btn btn-primary" onclick="NutriExport.printOfficialSummary()">Print Certificate</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Register New Child Modal -->
+  <div id="modal-add-child" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">Register Malnourished / Monitored Child</div>
+        <button class="modal-close-btn" onclick="NutriApp.closeModal('modal-add-child')">&times;</button>
+      </div>
+      <form id="add-child-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Child Full Name:</label>
+            <input type="text" name="childName" class="form-control" required placeholder="e.g. Joshua Garcia">
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Age in Months (6-59):</label>
+              <input type="number" name="childAge" class="form-control" min="6" max="59" value="18" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Sex:</label>
+              <select name="childSex" class="form-select" required>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Parent / Caregiver Name:</label>
+              <input type="text" name="parentName" class="form-control" required placeholder="e.g. Joy Garcia">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Contact Number:</label>
+              <input type="text" name="parentPhone" class="form-control" placeholder="09XX-XXX-XXXX">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Barangay:</label>
+            <select name="childBarangay" class="form-select" required>
+              <option value="Barangay San Jose">Barangay San Jose</option>
+              <option value="Barangay Santa Maria">Barangay Santa Maria</option>
+              <option value="Barangay San Isidro">Barangay San Isidro</option>
+              <option value="Barangay Poblacion">Barangay Poblacion</option>
+            </select>
+          </div>
+
+          <div class="grid-3">
+            <div class="form-group">
+              <label class="form-label">Height (cm):</label>
+              <input type="number" name="childHeight" class="form-control" step="0.1" value="73.5" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Weight (kg):</label>
+              <input type="number" name="childWeight" class="form-control" step="0.1" value="8.1" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">MUAC (mm):</label>
+              <input type="number" name="childMuac" class="form-control" value="116" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Clinical Observations &amp; Family Notes:</label>
+            <textarea name="childNotes" class="form-control" rows="2" placeholder="e.g. Family has low access to animal protein; advised on monggo and malunggay."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="NutriApp.closeModal('modal-add-child')">Cancel</button>
+          <button type="submit" class="btn btn-accent">Save &amp; Classify Child</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 6. Edit Child Measurements Modal -->
+  <div id="modal-edit-child" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">Update Child Measurements</div>
+        <button class="modal-close-btn" onclick="NutriApp.closeModal('modal-edit-child')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="edit-child-id">
+        <div class="form-group">
+          <label class="form-label">Child Name:</label>
+          <input type="text" id="edit-child-name" class="form-control" disabled>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Updated Age (Months):</label>
+            <input type="number" id="edit-child-age" class="form-control" min="6" max="59">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Updated Height (cm):</label>
+            <input type="number" id="edit-child-height" class="form-control" step="0.1">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Updated Weight (kg):</label>
+            <input type="number" id="edit-child-weight" class="form-control" step="0.1">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Updated MUAC (mm):</label>
+            <input type="number" id="edit-child-muac" class="form-control">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Follow-up Notes:</label>
+          <textarea id="edit-child-notes" class="form-control" rows="2"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="NutriApp.closeModal('modal-edit-child')">Cancel</button>
+        <button class="btn btn-accent" onclick="CHWModule.handleSaveEditedChild()">Update Child Record</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Submit Report to MHO Modal -->
+  <div id="modal-submit-report" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">Submit Report to Municipal Health Office</div>
+        <button class="modal-close-btn" onclick="NutriApp.closeModal('modal-submit-report')">&times;</button>
+      </div>
+      <form id="chw-submit-report-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Select Barangay to Report:</label>
+            <select id="report-barangay-select" class="form-select" onchange="CHWModule.openReportModal()">
+              <option value="Barangay San Jose">Barangay San Jose</option>
+              <option value="Barangay Santa Maria">Barangay Santa Maria</option>
+              <option value="Barangay San Isidro">Barangay San Isidro</option>
+              <option value="Barangay Poblacion">Barangay Poblacion</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Submitting Health Worker / BNS Name:</label>
+            <input type="text" name="reportChwName" class="form-control" value="Sister Teresa Lim, BNS" required>
+          </div>
+
+          <!-- Automated Summary Display -->
+          <div style="background:var(--bg-surface-subtle); border:1px solid var(--border-light); border-radius:var(--radius-md); padding:1rem; margin:1rem 0;">
+            <div style="font-weight:700; color:var(--color-primary-900); margin-bottom:0.5rem; font-size:0.9rem;">
+              Automated Aggregated Metrics for this Report:
+            </div>
+            <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:0.5rem; font-size:0.85rem;">
+              <div>• Total Children: <strong id="rep-calc-total">0</strong></div>
+              <div>• Stunted Count: <strong id="rep-calc-stunted" style="color:#EF4444;">0</strong></div>
+              <div>• Wasted Count: <strong id="rep-calc-wasted" style="color:#C2410C;">0</strong></div>
+              <div>• Underweight: <strong id="rep-calc-underweight" style="color:#F59E0B;">0</strong></div>
+              <div>• Improved / Recovered: <strong id="rep-calc-improved" style="color:#10B981;">0</strong></div>
+              <div>• Stunting Rate: <strong id="rep-calc-rate" style="color:#EF4444;">0.0%</strong></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Notes for Municipal Health Officer / Higher-Ups:</label>
+            <textarea name="reportNotes" class="form-control" rows="2" placeholder="e.g. Monthly feeding demonstration held; parent attendance high."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="NutriApp.closeModal('modal-submit-report')">Cancel</button>
+          <button type="submit" class="btn btn-accent">Submit Official Report</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js?v=2.1"></script>
+  <script src="js/exportUtils.js?v=2.1"></script>
+  <script src="js/healthWorker.js?v=2.1"></script>
+  <script src="js/parentLearning.js?v=2.1"></script>
+  <script src="js/mhoDashboard.js?v=2.1"></script>
+  <script src="js/app.js?v=2.1"></script>
 </body>
-
 </html>

@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad512" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#062013" />
+      <stop offset="40%" stop-color="#0E3D26" />
+      <stop offset="100%" stop-color="#14532D" />
+    </linearGradient>
+    <linearGradient id="leafGrad512" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#16A34A" />
+      <stop offset="50%" stop-color="#22C55E" />
+      <stop offset="100%" stop-color="#86EFAC" />
+    </linearGradient>
+    <linearGradient id="goldGrad512" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#FCD34D" />
+    </linearGradient>
+    <filter id="shadow512" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#000" flood-opacity="0.35" />
+    </filter>
+  </defs>
+
+  <!-- Background Card -->
+  <rect x="32" y="32" width="448" height="448" rx="112" fill="url(#bgGrad512)" stroke="#1F7A4C" stroke-width="6" filter="url(#shadow512)" />
+  
+  <!-- Subtle circular rings -->
+  <circle cx="256" cy="256" r="170" fill="none" stroke="#22C55E" stroke-width="3" stroke-dasharray="8 8" opacity="0.3" />
+  <circle cx="256" cy="256" r="195" fill="none" stroke="#86EFAC" stroke-width="1.5" stroke-dasharray="4 6" opacity="0.2" />
+
+  <!-- Nourishing Bowl / Hands -->
+  <path d="M 138 290 C 138 360, 374 360, 374 290 C 348 302, 164 302, 138 290 Z" fill="#F1F5F9" opacity="0.95" />
+  <path d="M 170 318 C 196 360, 316 360, 342 318 C 294 336, 218 336, 170 318 Z" fill="#CBD5E1" />
+
+  <!-- Growing Sprout Stem -->
+  <path d="M 256 308 Q 256 220 256 176" stroke="#22C55E" stroke-width="14" stroke-linecap="round" fill="none" />
+
+  <!-- Left Leaf -->
+  <path d="M 256 236 C 202 226, 160 188, 180 140 C 230 140, 252 194, 256 236 Z" fill="url(#leafGrad512)" />
+
+  <!-- Right Leaf -->
+  <path d="M 256 204 C 310 188, 348 150, 326 108 C 276 114, 260 168, 256 204 Z" fill="url(#leafGrad512)" />
+
+  <!-- Care Heart -->
+  <path d="M 256 140 C 250 130, 234 120, 224 130 C 214 140, 224 156, 256 182 C 288 156, 298 140, 288 130 C 278 120, 262 130, 256 140 Z" fill="url(#goldGrad512)" />
+
+  <!-- Sparkle of Hope / 10% Stunting Reduction Goal -->
+  <circle cx="374" cy="144" r="12" fill="#FBBF24" />
+  <path d="M 374 124 L 379 139 L 394 144 L 379 149 L 374 164 L 369 149 L 354 144 L 369 139 Z" fill="#FDE68A" />
+
+  <!-- Branding text at bottom inside icon -->
+  <text x="256" y="420" text-anchor="middle" font-family="'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="34" fill="#FFFFFF" letter-spacing="3">NUTRILEARN</text>
+  <text x="256" y="444" text-anchor="middle" font-family="'Segoe UI', Roboto, sans-serif" font-weight="500" font-size="16" fill="#86EFAC" letter-spacing="1">CHILD HEALTH &amp; NUTRITION</text>
+</svg>

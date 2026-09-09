@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#092617" />
+      <stop offset="50%" stop-color="#0E3D26" />
+      <stop offset="100%" stop-color="#14532D" />
+    </linearGradient>
+    <linearGradient id="leafGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#16A34A" />
+      <stop offset="50%" stop-color="#22C55E" />
+      <stop offset="100%" stop-color="#86EFAC" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#FCD34D" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <!-- Background Shield -->
+  <rect x="12" y="12" width="168" height="168" rx="42" fill="url(#bgGrad)" stroke="#1E6E45" stroke-width="3" filter="url(#shadow)" />
+  
+  <!-- Subtle circular halo -->
+  <circle cx="96" cy="96" r="64" fill="none" stroke="#22C55E" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.4" />
+
+  <!-- Nourishing Bowl / Hands -->
+  <path d="M 52 110 C 52 136, 140 136, 140 110 C 130 114, 62 114, 52 110 Z" fill="#E2E8F0" opacity="0.9" />
+  <path d="M 64 120 C 74 136, 118 136, 128 120 C 110 127, 82 127, 64 120 Z" fill="#CBD5E1" />
+
+  <!-- Sprout Stem -->
+  <path d="M 96 116 Q 96 82 96 66" stroke="#22C55E" stroke-width="6" stroke-linecap="round" fill="none" />
+
+  <!-- Left Leaf -->
+  <path d="M 96 88 C 76 84, 60 70, 68 52 C 86 52, 94 72, 96 88 Z" fill="url(#leafGrad)" />
+
+  <!-- Right Leaf -->
+  <path d="M 96 76 C 116 70, 130 56, 122 40 C 104 42, 98 62, 96 76 Z" fill="url(#leafGrad)" />
+
+  <!-- Heart / Care Symbol -->
+  <path d="M 96 52 C 94 48, 88 44, 84 48 C 80 52, 84 58, 96 68 C 108 58, 112 52, 108 48 C 104 44, 98 48, 96 52 Z" fill="url(#accentGrad)" />
+
+  <!-- Stunting Reduction Indicator Star -->
+  <circle cx="140" cy="54" r="5" fill="#FBBF24" />
+  <path d="M 140 46 L 142 52 L 148 54 L 142 56 L 140 62 L 138 56 L 132 54 L 138 52 Z" fill="#FDE68A" />
+</svg>
