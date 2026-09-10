@@ -7,6 +7,7 @@ const NutriApp = {
   currentRole: 'parent',
   currentAuthRole: 'parent',
   currentAuthMode: 'signin',
+  portalAction: 'signin',
   deferredInstallPrompt: null,
 
   init() {
@@ -21,6 +22,9 @@ const NutriApp = {
     ParentModule.init();
     CHWModule.init();
     MHODashboard.init();
+    if (window.AnnouncementsModule) {
+      AnnouncementsModule.init();
+    }
 
     // The selection of User Portal and Sign In appears immediately before using the system!
     this.showStartupScreen();
@@ -41,29 +45,99 @@ const NutriApp = {
     this.setStartupPhase(1);
   },
 
-  // Switch between Part 1 (Select Your User Portal) and Part 2 (Sign In / Sign Up)
-  setStartupPhase(phaseNumber) {
+  // Switch between Phase 1 (Portal Selection), Phase 2 (Sign In only), and Phase 3 (Sign Up only)
+  setStartupPhase(phase) {
     const part1 = document.getElementById('startup-part-1');
-    const part2 = document.getElementById('startup-part-2');
+    const phaseSignin = document.getElementById('startup-phase-signin');
+    const phaseSignup = document.getElementById('startup-phase-signup');
 
-    if (phaseNumber === 1) {
+    if (phase === 1 || phase === 'role-select') {
       if (part1) part1.style.display = 'block';
-      if (part2) part2.style.display = 'none';
-    } else {
+      if (phaseSignin) phaseSignin.style.display = 'none';
+      if (phaseSignup) phaseSignup.style.display = 'none';
+      this.selectStartupRoleCard(this.currentAuthRole || 'parent');
+      this.portalAction = 'signin';
+      this.currentAuthMode = 'signin';
+      this.setPortalAction(this.portalAction);
+    } else if (phase === 2 || phase === 'signin') {
       if (part1) part1.style.display = 'none';
-      if (part2) part2.style.display = 'block';
-      this.updateStartupFormDisplay();
+      if (phaseSignin) phaseSignin.style.display = 'block';
+      if (phaseSignup) phaseSignup.style.display = 'none';
+      this.currentAuthMode = 'signin';
+      this.portalAction = 'signin';
+      this.updateStartupFormDisplay('signin');
+    } else if (phase === 3 || phase === 'signup') {
+      if (part1) part1.style.display = 'none';
+      if (phaseSignin) phaseSignin.style.display = 'none';
+      if (phaseSignup) phaseSignup.style.display = 'block';
+      this.currentAuthMode = 'signup';
+      this.portalAction = 'signup';
+      this.updateStartupFormDisplay('signup');
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   },
 
-  // User clicks a portal card in Part 1 -> Move to Part 2 (Sign In / Sign Up)
-  choosePortalAndProceed(role) {
-    this.currentAuthRole = role;
-    this.setStartupPhase(2);
+  // Set Portal Action on Phase 1 (Toggle between Sign In and Sign Up)
+  setPortalAction(action) {
+    this.portalAction = action;
+    const tabSignin = document.getElementById('tab-portal-signin');
+    const tabSignup = document.getElementById('tab-portal-signup');
+    const continueBtn = document.getElementById('btn-portal-continue');
+    const footerLink = document.getElementById('portal-footer-link');
+
+    if (tabSignin) tabSignin.classList.toggle('active', action === 'signin');
+    if (tabSignup) tabSignup.classList.toggle('active', action === 'signup');
+
+    if (continueBtn) {
+      continueBtn.textContent = action === 'signin' ? 'Continue to Sign In' : 'Continue to Sign Up';
+    }
+
+    if (footerLink) {
+      if (action === 'signin') {
+        footerLink.innerHTML = `Don't have an account? <a href="javascript:void(0)" onclick="NutriApp.setPortalAction('signup')">Sign up here</a>`;
+      } else {
+        footerLink.innerHTML = `Already have an account? <a href="javascript:void(0)" onclick="NutriApp.setPortalAction('signin')">Sign in here</a>`;
+      }
+    }
   },
 
-  // Alias for portal selection
+  // Select a role card in Part 1 (radio selection matching screenshot)
+  selectStartupRoleCard(role) {
+    this.currentAuthRole = role;
+    
+    // Update visual active state on portal cards
+    const cards = document.querySelectorAll('.portal-choice-card');
+    cards.forEach(card => {
+      const cardRole = card.getAttribute('data-role');
+      if (cardRole === role) {
+        card.classList.add('selected');
+      } else {
+        card.classList.remove('selected');
+      }
+    });
+  },
+
+  // User clicks "Continue" -> proceed to Sign In or Sign Up based on selected action
+  proceedWithSelectedRole() {
+    if (this.portalAction === 'signup') {
+      this.setStartupPhase('signup');
+    } else {
+      this.setStartupPhase('signin');
+    }
+  },
+
+  // User clicks "Register here" -> proceed directly to dedicated Sign Up phase
+  proceedToRegister() {
+    this.setPortalAction('signup');
+    this.setStartupPhase('signup');
+  },
+
+  // Direct choice and proceed (alias)
+  choosePortalAndProceed(role) {
+    this.selectStartupRoleCard(role);
+    this.proceedWithSelectedRole();
+  },
+
   selectStartupRole(role) {
     this.choosePortalAndProceed(role);
   },
@@ -81,37 +155,17 @@ const NutriApp = {
     }
   },
 
-  // Toggle between Sign In and Sign Up on Startup Screen
-  switchStartupAuthMode(mode) {
-    this.currentAuthMode = mode;
-
-    const signinTab = document.getElementById('startup-tab-signin');
-    const signupTab = document.getElementById('startup-tab-signup');
-    const signinForm = document.getElementById('startup-signin-form');
-    const signupForm = document.getElementById('startup-signup-form');
-
-    if (signinTab) signinTab.classList.toggle('active', mode === 'signin');
-    if (signupTab) signupTab.classList.toggle('active', mode === 'signup');
-    if (signinForm) signinForm.style.display = mode === 'signin' ? 'block' : 'none';
-    if (signupForm) signupForm.style.display = mode === 'signup' ? 'block' : 'none';
-  },
-
   // Update Startup Form Banner and Fields based on chosen portal
-  updateStartupFormDisplay() {
+  updateStartupFormDisplay(mode = 'signin') {
     const titles = {
-      parent: 'Parent & Caregiver Portal',
-      chw: 'Barangay Health Worker (BHW) Portal',
-      mho: 'Municipal Health Office (Admin) Portal'
-    };
-    const icons = {
-      parent: '👨‍👩‍👧',
-      chw: '🩺',
-      mho: '🏛️'
+      parent: 'Parent / Guardian',
+      chw: 'Health Worker',
+      mho: 'Administrator'
     };
     const demoNames = {
-      parent: 'Maria Ramos (Parent Demo)',
-      chw: 'Sister Teresa Lim, BNS (BHW Demo)',
-      mho: 'Dr. Elena Cruz, MHO (Administrator Demo)'
+      parent: 'Maria Ramos (Parent)',
+      chw: 'Sister Teresa Lim (Health Worker)',
+      mho: 'Dr. Elena Cruz (Administrator)'
     };
     const defaultEmails = {
       parent: 'maria.parent@nutrilearn.ph',
@@ -119,19 +173,19 @@ const NutriApp = {
       mho: 'admin.mho@nutrilearn.ph'
     };
 
-    const iconElem = document.getElementById('startup-current-role-icon');
-    const titleElem = document.getElementById('startup-current-role-title');
+    const signinTitle = document.getElementById('startup-signin-role-title');
+    const signupTitle = document.getElementById('startup-signup-role-title');
     const demoBtn = document.getElementById('btn-startup-demo-login');
     const emailInput = document.getElementById('startup-login-username');
     const submitBtn = document.getElementById('btn-startup-submit-signin');
 
-    if (iconElem) iconElem.textContent = icons[this.currentAuthRole] || '👤';
-    if (titleElem) titleElem.textContent = titles[this.currentAuthRole] || 'User Portal';
-    if (demoBtn) demoBtn.innerHTML = `⚡ 1-Click Demo Login as <strong>${demoNames[this.currentAuthRole] || 'Demo User'}</strong>`;
+    if (signinTitle) signinTitle.textContent = titles[this.currentAuthRole] || 'User Portal';
+    if (signupTitle) signupTitle.textContent = titles[this.currentAuthRole] || 'User Portal';
+    if (demoBtn) demoBtn.innerHTML = `Demo Login as <strong>${demoNames[this.currentAuthRole] || 'Demo User'}</strong>`;
     if (emailInput) emailInput.value = defaultEmails[this.currentAuthRole] || '';
-    if (submitBtn) submitBtn.textContent = `Sign In to Enter ${titles[this.currentAuthRole]} →`;
+    if (submitBtn) submitBtn.textContent = 'Sign In';
 
-    // Show/hide role specific registration fields
+    // Show/hide role specific registration fields in sign-up phase
     const parentFields = document.getElementById('startup-signup-parent');
     const bhwFields = document.getElementById('startup-signup-bhw');
     const mhoFields = document.getElementById('startup-signup-mho');
@@ -335,14 +389,19 @@ const NutriApp = {
     if (role === 'chw') {
       CHWModule.renderRegistryTable();
       CHWModule.updateStatsBar();
-      this.switchCHWSubTab('registry');
+      this.switchCHWSubTab('dashboard');
     } else if (role === 'mho') {
       MHODashboard.init();
-      this.switchMHOSubTab('kpis');
+      this.switchMHOSubTab('dashboard');
     } else if (role === 'parent') {
       ParentModule.renderModuleCards();
       ParentModule.updateProgressHeader();
-      this.switchParentSubTab('learning');
+      this.switchParentSubTab('dashboard');
+    }
+
+    if (window.AnnouncementsModule) {
+      AnnouncementsModule.renderAllFeeds();
+      AnnouncementsModule.renderDashboardWidgets();
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -411,21 +470,15 @@ const NutriApp = {
   // Update Auth Form UI based on chosen role
   updateAuthFormDisplay() {
     const roleTitles = {
-      parent: 'Parent / Caregiver Portal',
-      chw: 'Barangay Health Worker (BHW) Portal',
-      mho: 'Municipal Health Office (Admin) Portal'
-    };
-
-    const roleIcons = {
-      parent: '👨‍👩‍👧',
-      chw: '🩺',
-      mho: '🏛️'
+      parent: 'Parent Portal',
+      chw: 'BHW Portal',
+      mho: 'Administrator Portal'
     };
 
     const roleTag = document.getElementById('auth-current-role-tag');
     const roleIcon = document.getElementById('auth-current-role-icon');
     if (roleTag) roleTag.textContent = roleTitles[this.currentAuthRole] || 'Portal';
-    if (roleIcon) roleIcon.textContent = roleIcons[this.currentAuthRole] || '👤';
+    if (roleIcon) roleIcon.textContent = '';
 
     // Show/hide role specific signup fields
     const parentFields = document.getElementById('signup-fields-parent');
@@ -441,10 +494,10 @@ const NutriApp = {
     if (demoBtn) {
       const demoNames = {
         parent: 'Maria Ramos (Parent)',
-        chw: 'Sister Teresa Lim, BNS (BHW)',
-        mho: 'Dr. Elena Cruz (Administrator)'
+        chw: 'Sister Teresa Lim (BHW)',
+        mho: 'Dr. Elena Cruz (Admin)'
       };
-      demoBtn.innerHTML = `⚡ 1-Click Quick Demo Login as <strong>${demoNames[this.currentAuthRole] || 'User'}</strong>`;
+      demoBtn.innerHTML = `Demo Login as <strong>${demoNames[this.currentAuthRole] || 'User'}</strong>`;
     }
 
     // Default to signin mode

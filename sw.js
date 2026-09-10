@@ -1,5 +1,5 @@
-// NutriLearn Service Worker - v2.1.0
-const CACHE_NAME = 'nutrilearn-v2.1.0';
+// NutriLearn Service Worker - v2.3.0
+const CACHE_NAME = 'nutrilearn-v2.3.0';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -11,6 +11,7 @@ const ASSETS_TO_CACHE = [
   './js/healthWorker.js',
   './js/parentLearning.js',
   './js/mhoDashboard.js',
+  './js/announcements.js',
   './js/exportUtils.js',
   './assets/icons/icon-192.svg',
   './assets/icons/icon-512.svg'
@@ -21,7 +22,7 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[Service Worker] Caching NutriLearn app shell v2.1.0');
+      console.log('[Service Worker] Caching NutriLearn app shell v2.3.0');
       return cache.addAll(ASSETS_TO_CACHE);
     })
   );

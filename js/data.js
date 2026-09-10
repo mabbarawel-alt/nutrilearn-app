@@ -593,6 +593,85 @@ const NUTRI_DATA = {
       status: 'Pending Review',
       notes: 'High compliance rate: 88% of registered parents scored above 85% on knowledge assessments.'
     }
+  ],
+
+  // Initial Community & Municipal Announcements
+  initialAnnouncements: [
+    {
+      id: 'ann-1',
+      title: 'Municipal Supplementary Food Pack & MNP Distribution',
+      content: 'All parents of enrolled malnourished and stunted infants (6-23 months) are advised to claim their bi-weekly rations at their designated Barangay Health Centers this Thursday and Friday from 8:00 AM to 3:00 PM. BHWs will assist with height and weight verifications.',
+      category: 'Ration Distribution',
+      priority: 'high',
+      authorName: 'Dr. Elena Cruz, MHO',
+      authorRole: 'mho',
+      authorDesignation: 'Municipal Health Officer',
+      targetAudience: 'both', // Admin option: Both PARENT & BHW
+      targetBarangays: ['Barangay San Jose', 'Barangay Santa Maria', 'Barangay San Isidro', 'Barangay Poblacion'],
+      barangay: 'All Barangays',
+      createdAt: '2026-09-08T09:00:00.000Z',
+      pinned: true
+    },
+    {
+      id: 'ann-2',
+      title: 'MHO Internal Directive: Submission of September OPT Plus & WHO Recalibration Data',
+      content: 'Notice to all BHWs and BNS in Barangays San Jose, Santa Maria, San Isidro, and Poblacion: Please finalize and submit your consolidated monthly malnutrition census via NutriLearn by September 15. Ensure all MUAC tape measurements are cross-checked before submitting electronic reports.',
+      category: 'Health Worker Directive',
+      priority: 'urgent',
+      authorName: 'Dr. Elena Cruz, MHO',
+      authorRole: 'mho',
+      authorDesignation: 'Municipal Health Officer',
+      targetAudience: 'bhw', // Admin option: BHW only
+      targetBarangays: ['Barangay San Jose', 'Barangay Santa Maria', 'Barangay San Isidro', 'Barangay Poblacion'],
+      barangay: 'All Barangays',
+      createdAt: '2026-09-07T14:30:00.000Z',
+      pinned: true
+    },
+    {
+      id: 'ann-3',
+      title: 'Barangay San Jose: Community Catch-up Weighing & Deworming Day',
+      content: 'San Jose Health Center will conduct community-wide growth monitoring, Height-for-Age re-assessments, and Deworming for toddlers aged 12-59 months this Saturday, Sept 12 starting 8:30 AM. Municipal Health team will be present for spot validation.',
+      category: 'Growth Weigh-in',
+      priority: 'normal',
+      authorName: 'Sister Teresa Lim, BNS',
+      authorRole: 'chw',
+      authorDesignation: 'Barangay Nutrition Scholar',
+      targetAudience: 'admin_parent', // BHW option: Both ADMIN and PARENT
+      targetBarangays: ['Barangay San Jose'],
+      barangay: 'Barangay San Jose',
+      createdAt: '2026-09-06T10:15:00.000Z',
+      pinned: false
+    },
+    {
+      id: 'ann-4',
+      title: 'Free Fresh Vegetables & Fortified Monggo Packets for Active Pinggang Pinoy Learners',
+      content: 'Caregivers who complete Learning Module 2 and Module 3 this week can pick up fresh malunggay bundles, squash, and fortified monggo packets at the San Jose Barangay Hall. Show your completed quiz score on your phone!',
+      category: 'Parent Incentive',
+      priority: 'normal',
+      authorName: 'Sister Teresa Lim, BNS',
+      authorRole: 'chw',
+      authorDesignation: 'Barangay Nutrition Scholar',
+      targetAudience: 'parent', // BHW option: PARENT only
+      targetBarangays: ['Barangay San Jose'],
+      barangay: 'Barangay San Jose',
+      createdAt: '2026-09-05T16:00:00.000Z',
+      pinned: false
+    },
+    {
+      id: 'ann-5',
+      title: 'Targeted Supplementary Nutrition Rations for Barangay Santa Maria',
+      content: 'Due to elevated stunting burden (38.1%), additional fortified rice and ready-to-use therapeutic food packs have been dispatched specifically to the Santa Maria Health Center. Claiming opens this coming Monday for verified priority beneficiaries.',
+      category: 'Ration Distribution',
+      priority: 'high',
+      authorName: 'Dr. Elena Cruz, MHO',
+      authorRole: 'mho',
+      authorDesignation: 'Municipal Health Officer',
+      targetAudience: 'both', // Admin option: Both PARENT & BHW
+      targetBarangays: ['Barangay Santa Maria'],
+      barangay: 'Barangay Santa Maria',
+      createdAt: '2026-09-09T08:00:00.000Z',
+      pinned: false
+    }
   ]
 };
 

@@ -11,6 +11,7 @@ const NutriStorage = {
   USER_PROGRESS_KEY: 'nutrilearn_parent_progress_v1',
   USERS_KEY: 'nutrilearn_users_v1',
   CURRENT_USER_KEY: 'nutrilearn_current_user_v1',
+  ANNOUNCEMENTS_KEY: 'nutrilearn_announcements_v1',
 
   // Initialize storage with seed data if empty
   init() {
@@ -19,6 +20,10 @@ const NutriStorage = {
     }
     if (!localStorage.getItem(this.REPORTS_KEY)) {
       localStorage.setItem(this.REPORTS_KEY, JSON.stringify(NUTRI_DATA.initialReports));
+    }
+    const storedAnn = localStorage.getItem(this.ANNOUNCEMENTS_KEY);
+    if (!storedAnn || !storedAnn.includes('targetBarangays')) {
+      localStorage.setItem(this.ANNOUNCEMENTS_KEY, JSON.stringify(NUTRI_DATA.initialAnnouncements || []));
     }
     if (!localStorage.getItem(this.USER_PROGRESS_KEY)) {
       const initialProgress = {
@@ -200,6 +205,95 @@ const NutriStorage = {
 
   saveParentProgress(progress) {
     localStorage.setItem(this.USER_PROGRESS_KEY, JSON.stringify(progress));
+  },
+
+  // Announcements CRUD & Role-Based Audience Filtering
+  getAnnouncements() {
+    try {
+      const data = localStorage.getItem(this.ANNOUNCEMENTS_KEY);
+      return data ? JSON.parse(data) : (NUTRI_DATA.initialAnnouncements || []);
+    } catch (e) {
+      return NUTRI_DATA.initialAnnouncements || [];
+    }
+  },
+
+  saveAnnouncements(list) {
+    localStorage.setItem(this.ANNOUNCEMENTS_KEY, JSON.stringify(list));
+  },
+
+  addAnnouncement(post) {
+    const list = this.getAnnouncements();
+    post.id = 'ann-' + Date.now();
+    post.createdAt = new Date().toISOString();
+    list.unshift(post);
+    this.saveAnnouncements(list);
+    return post;
+  },
+
+  deleteAnnouncement(id) {
+    let list = this.getAnnouncements();
+    list = list.filter(a => a.id !== id);
+    this.saveAnnouncements(list);
+    return true;
+  },
+
+  // Strict Audience & Barangay Isolation Filter per Role
+  getAnnouncementsForRole(role) {
+    const all = this.getAnnouncements();
+    const currentUser = this.getCurrentUser();
+    const userBarangay = currentUser?.barangay || 'Barangay San Jose';
+
+    if (role === 'parent') {
+      // PARENTS can ONLY view announcements routed to Parents:
+      // - Audience: 'both', 'admin_parent', or 'parent' (STRICTLY HIDDEN: 'bhw')
+      // - Destination Barangay: must be 'All Barangays' or include user's barangay
+      return all.filter(a => {
+        const isAudience = (
+          a.targetAudience === 'both' || 
+          a.targetAudience === 'admin_parent' || 
+          a.targetAudience === 'parent'
+        );
+        if (!isAudience) return false;
+
+        // Barangay Destination match
+        if (!a.targetBarangays || a.barangay === 'All Barangays' || a.targetBarangays.includes('ALL') || a.targetBarangays.length === 0) {
+          return true;
+        }
+        return a.targetBarangays.includes(userBarangay) || a.barangay === userBarangay;
+      });
+    } else if (role === 'chw') {
+      // BHWs can view all announcements where BHW is in the audience:
+      // - Admin post: 'both' or 'bhw' (internal directive)
+      // - BHW post: 'admin_parent' or 'parent' (their own / peer posts)
+      // - Destination Barangay: must be 'All Barangays' or include BHW's assigned barangay
+      return all.filter(a => {
+        const isAudience = (
+          a.targetAudience === 'both' || 
+          a.targetAudience === 'bhw' || 
+          a.targetAudience === 'admin_parent' || 
+          a.targetAudience === 'parent' ||
+          a.authorRole === 'chw'
+        );
+        if (!isAudience) return false;
+
+        // BHW author always sees their own posts
+        if (a.authorRole === 'chw') return true;
+
+        if (!a.targetBarangays || a.barangay === 'All Barangays' || a.targetBarangays.includes('ALL') || a.targetBarangays.length === 0) {
+          return true;
+        }
+        return a.targetBarangays.includes(userBarangay) || a.barangay === userBarangay;
+      });
+    } else if (role === 'mho') {
+      // ADMIN can view all official Admin broadcasts and BHW broadcasts routed to Admin across all barangays
+      return all.filter(a => 
+        a.authorRole === 'mho' || 
+        a.targetAudience === 'both' || 
+        a.targetAudience === 'admin_parent' ||
+        a.targetAudience === 'bhw'
+      );
+    }
+    return all;
   }
 };
 

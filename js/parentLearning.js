@@ -79,6 +79,20 @@ const ParentModule = {
     if (badgeElem) {
       badgeElem.textContent = pct === 100 ? '🏆 Certified Parent Nutrition Champion' : 'Progressing Well';
     }
+
+    // Dynamic Parent Dashboard metrics updates
+    const dashProgressVal = document.getElementById('parent-dash-progress-val');
+    const dashProgressSub = document.getElementById('parent-dash-progress-sub');
+    if (dashProgressVal) dashProgressVal.textContent = `${pct}%`;
+    if (dashProgressSub) {
+      dashProgressSub.textContent = `${completed.length} of ${total} Modules Done (${pct === 100 ? 'Certified Champion' : 'Certificate Pending'})`;
+    }
+
+    const currentUser = NutriStorage.getCurrentUser();
+    const greetingName = document.getElementById('parent-dash-greeting-name');
+    if (greetingName && currentUser && currentUser.name) {
+      greetingName.textContent = currentUser.name;
+    }
   },
 
   // Open Lesson Reader

@@ -338,6 +338,17 @@ const CHWModule = {
     if (elemStunted) elemStunted.textContent = stunted;
     if (elemWasted) elemWasted.textContent = wasted;
     if (elemImproved) elemImproved.textContent = improved;
+
+    // Synchronize BHW Operations Dashboard stats
+    const dashTotal = document.getElementById('bhw-dash-stat-total');
+    const dashStunted = document.getElementById('bhw-dash-stat-stunted');
+    const dashWasted = document.getElementById('bhw-dash-stat-wasted');
+    const dashImproved = document.getElementById('bhw-dash-stat-improved');
+
+    if (dashTotal) dashTotal.textContent = total;
+    if (dashStunted) dashStunted.textContent = stunted;
+    if (dashWasted) dashWasted.textContent = wasted;
+    if (dashImproved) dashImproved.textContent = improved;
   },
 
   // Toggle child health improved status

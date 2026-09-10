@@ -45,6 +45,19 @@ const MHODashboard = {
     if (elImproved) elImproved.textContent = improved;
     if (elWasted) elWasted.textContent = wasted;
 
+    // Synchronize Executive Dashboard overview cards
+    const elDashTotal = document.getElementById('admin-dash-kpi-total');
+    const elDashStuntingRate = document.getElementById('admin-dash-kpi-stunting-rate');
+    const elDashTargetProgress = document.getElementById('admin-dash-kpi-target-progress');
+    const elDashTargetBar = document.getElementById('admin-dash-kpi-target-bar');
+    const elDashImproved = document.getElementById('admin-dash-kpi-improved');
+
+    if (elDashTotal) elDashTotal.textContent = total;
+    if (elDashStuntingRate) elDashStuntingRate.textContent = `${currentStuntingRate}%`;
+    if (elDashTargetProgress) elDashTargetProgress.textContent = `${actualReduction}% pts / 10% Goal (${reductionProgressPct}%)`;
+    if (elDashTargetBar) elDashTargetBar.style.width = `${reductionProgressPct}%`;
+    if (elDashImproved) elDashImproved.textContent = improved;
+
     // Mini Chart Distribution Bars
     const barStunted = document.getElementById('dist-bar-stunted');
     const barWasted = document.getElementById('dist-bar-wasted');
