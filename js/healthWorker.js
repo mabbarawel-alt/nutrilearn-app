@@ -13,6 +13,7 @@ const CHWModule = {
     this.renderRegistryTable();
     this.updateStatsBar();
     this.initGrowthCalculator();
+    this.initGroups();
   },
 
   bindEvents() {
@@ -520,5 +521,336 @@ const CHWModule = {
     
     // Refresh MHO if available
     if (window.MHODashboard) MHODashboard.init();
+  },
+
+  // ==========================================================================
+  // PARENT GROUPS & LESSON ASSIGNMENT (Req #8 & Req #13)
+  // ==========================================================================
+  initGroups() {
+    this.renderGroups();
+  },
+
+  renderGroups() {
+    const container = document.getElementById('chw-groups-container');
+    if (!container) return;
+
+    const groups = NutriStorage.getGroups();
+    const allChildren = NutriStorage.getChildren();
+    const allModules = NutriStorage.getModules();
+
+    if (groups.length === 0) {
+      container.innerHTML = `
+        <div style="text-align:center; padding:3rem 1rem; background:#FFFFFF; border:1px dashed var(--border-light); border-radius:var(--radius-lg);">
+          <div style="font-size:2.5rem; margin-bottom:0.5rem;">👥</div>
+          <h3 style="color:var(--color-primary-900); margin-bottom:0.5rem;">No Parent Groups Planned Yet</h3>
+          <p style="color:var(--text-muted); max-width:450px; margin:0 auto 1.25rem;">
+            Create community parent cohorts to assign targeted feeding lessons, share tailored advice, and monitor collective learning progress.
+          </p>
+          <button class="btn btn-primary" onclick="CHWModule.openCreateGroupModal()">
+            + Create First Parent Group
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = groups.map(grp => {
+      // Find enrolled children records
+      const enrolled = allChildren.filter(c => (grp.enrolledChildIds || []).includes(c.id));
+      const assignedMods = allModules.filter(m => (grp.assignedModules || []).includes(m.id));
+
+      // Calculate cohort progress
+      let totalAssigned = (grp.assignedModules || []).length * (enrolled.length || 1);
+      let totalCompleted = 0;
+      enrolled.forEach(c => {
+        const completed = c.completedModules || [];
+        (grp.assignedModules || []).forEach(modId => {
+          if (completed.includes(modId)) totalCompleted++;
+        });
+      });
+      const progressPct = totalAssigned > 0 ? Math.round((totalCompleted / totalAssigned) * 100) : 0;
+
+      return `
+        <div class="card" style="margin-bottom:1.5rem; border:1px solid var(--border-light); box-shadow:var(--shadow-sm);">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem; margin-bottom:1rem; padding-bottom:1rem; border-bottom:1px solid var(--border-light);">
+            <div>
+              <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.25rem;">
+                <h3 style="color:var(--color-primary-900); font-size:1.15rem; font-weight:700; margin:0;">${grp.name}</h3>
+                <span class="badge badge-normal" style="font-size:0.75rem;">${grp.barangay}</span>
+              </div>
+              <div style="font-size:0.82rem; color:var(--text-muted);">
+                🎯 Target Focus: <strong>${grp.targetCategory}</strong> • Facilitator: <strong>${grp.facilitator}</strong>
+              </div>
+            </div>
+            <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+              <button class="btn btn-outline btn-sm" onclick="CHWModule.openAssignLessonsModal('${grp.id}')" title="Assign feeding lessons">
+                📚 Assign Lessons
+              </button>
+              <button class="btn btn-outline btn-sm" onclick="CHWModule.openEnrollChildrenModal('${grp.id}')" title="Enroll parents/children">
+                👶 Manage Members (${enrolled.length})
+              </button>
+              <button class="btn btn-accent btn-sm" onclick="CHWModule.openGroupAdviceModal('${grp.id}')" title="Send advice to this cohort">
+                📢 Send Advice
+              </button>
+              <button class="btn btn-outline btn-sm" style="color:#DC2626; border-color:#FCA5A5;" onclick="CHWModule.handleDeleteGroup('${grp.id}')" title="Delete Group">
+                🗑️
+              </button>
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div style="margin-bottom:1.25rem; background:#F8FAFC; padding:0.85rem 1rem; border-radius:var(--radius-md);">
+            <div style="display:flex; justify-content:space-between; font-size:0.82rem; font-weight:600; margin-bottom:0.4rem;">
+              <span>Cohort Learning Completion:</span>
+              <span style="color:var(--color-primary-800);">${progressPct}% (${totalCompleted}/${totalAssigned} lessons completed)</span>
+            </div>
+            <div style="height:8px; background:#E2E8F0; border-radius:9999px; overflow:hidden;">
+              <div style="width:${progressPct}%; height:100%; background:linear-gradient(90deg, #16A34A, #22C55E); border-radius:9999px; transition:width 0.4s ease;"></div>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1rem;">
+            <!-- Assigned Modules Column -->
+            <div style="background:#F0FDF4; padding:0.85rem 1rem; border-radius:var(--radius-md); border-left:3px solid #16A34A;">
+              <div style="font-size:0.8rem; font-weight:700; color:#14532D; margin-bottom:0.5rem; text-transform:uppercase; letter-spacing:0.04em;">
+                📖 Assigned Lessons (${assignedMods.length})
+              </div>
+              <div style="display:flex; flex-direction:column; gap:0.4rem;">
+                ${assignedMods.length ? assignedMods.map(m => `
+                  <div style="font-size:0.82rem; color:#1F2937; display:flex; align-items:center; gap:6px;">
+                    <span style="color:#16A34A; font-weight:700;">✓</span>
+                    <span><strong>${m.number}:</strong> ${m.title}</span>
+                  </div>
+                `).join('') : '<span style="font-size:0.8rem; color:var(--text-muted);">No lessons assigned yet. Click "Assign Lessons".</span>'}
+              </div>
+            </div>
+
+            <!-- Tailored Advice / Group Notes -->
+            <div style="background:#FFFBEB; padding:0.85rem 1rem; border-radius:var(--radius-md); border-left:3px solid #F59E0B;">
+              <div style="font-size:0.8rem; font-weight:700; color:#92400E; margin-bottom:0.5rem; text-transform:uppercase; letter-spacing:0.04em;">
+                💡 Facilitator Advice & Next Steps
+              </div>
+              <p style="font-size:0.84rem; color:#78350F; line-height:1.45; margin:0;">
+                ${grp.adviceNotes || 'No advice recorded yet. Click "Send Advice" to post tailored feeding guidance.'}
+              </p>
+            </div>
+          </div>
+
+          <!-- Enrolled Parents / Children Chips -->
+          <div style="margin-top:1rem; padding-top:0.75rem; border-top:1px dashed var(--border-light);">
+            <div style="font-size:0.78rem; font-weight:600; color:var(--text-muted); margin-bottom:0.4rem;">
+              Enrolled Children & Parents (${enrolled.length}):
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+              ${enrolled.length ? enrolled.map(c => `
+                <span style="background:#F1F5F9; border:1px solid #CBD5E1; padding:2px 8px; border-radius:9999px; font-size:0.75rem; color:#334155;">
+                  👶 <strong>${c.name}</strong> (${c.parentName}) • <span style="color:${c.status === 'Normal' || c.improved ? '#16A34A' : '#DC2626'};">${c.improved ? 'Recovered' : c.status}</span>
+                </span>
+              `).join('') : '<span style="font-size:0.78rem; color:var(--text-muted);">No children enrolled yet.</span>'}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  },
+
+  openCreateGroupModal() {
+    NutriApp.openModal('modal-create-group');
+  },
+
+  handleSaveGroup(form) {
+    const name = form.elements['groupName'].value.trim();
+    const barangay = form.elements['groupBarangay'].value;
+    const targetCategory = form.elements['groupCategory'].value.trim();
+    const facilitator = form.elements['groupFacilitator'].value.trim();
+    const adviceNotes = form.elements['groupNotes'].value.trim();
+
+    // Validation (Req #14)
+    if (!name || !targetCategory || !facilitator) {
+      NutriApp.showToast('Please fill in all required group fields before saving.', 'warning');
+      return;
+    }
+
+    const newGroup = {
+      name,
+      barangay,
+      targetCategory,
+      facilitator,
+      adviceNotes,
+      assignedModules: ['mod-1', 'mod-3'],
+      enrolledChildIds: []
+    };
+
+    NutriStorage.addGroup(newGroup);
+    form.reset();
+    NutriApp.closeModal('modal-create-group');
+    this.renderGroups();
+    NutriApp.showToast(`🎉 Parent group "${name}" successfully created!`, 'success');
+  },
+
+  handleDeleteGroup(groupId) {
+    if (confirm('Are you sure you want to delete this parent group?')) {
+      NutriStorage.deleteGroup(groupId);
+      this.renderGroups();
+      NutriApp.showToast('Parent group removed.', 'info');
+    }
+  },
+
+  openAssignLessonsModal(groupId) {
+    const group = NutriStorage.getGroups().find(g => g.id === groupId);
+    if (!group) return;
+
+    document.getElementById('assign-group-id').value = group.id;
+    document.getElementById('assign-group-title').textContent = group.name;
+
+    const modules = NutriStorage.getModules();
+    const container = document.getElementById('assign-modules-checkboxes');
+    if (container) {
+      container.innerHTML = modules.map(m => {
+        const isChecked = (group.assignedModules || []).includes(m.id);
+        return `
+          <label style="display:flex; align-items:flex-start; gap:0.6rem; padding:0.6rem; background:#F8FAFC; border:1px solid var(--border-light); border-radius:6px; margin-bottom:0.4rem; cursor:pointer;">
+            <input type="checkbox" name="assignedMod" value="${m.id}" ${isChecked ? 'checked' : ''} style="margin-top:3px; accent-color:var(--color-primary-600);">
+            <div>
+              <strong style="color:var(--color-primary-900); font-size:0.86rem;">${m.number}: ${m.title}</strong>
+              <div style="font-size:0.76rem; color:var(--text-muted);">${m.summary}</div>
+            </div>
+          </label>
+        `;
+      }).join('');
+    }
+
+    NutriApp.openModal('modal-assign-lessons');
+  },
+
+  handleSaveLessonAssignment(form) {
+    const groupId = document.getElementById('assign-group-id').value;
+    const group = NutriStorage.getGroups().find(g => g.id === groupId);
+    if (!group) return;
+
+    const checkedBoxes = form.querySelectorAll('input[name="assignedMod"]:checked');
+    const assigned = Array.from(checkedBoxes).map(cb => cb.value);
+
+    // Validation (Req #14)
+    if (assigned.length === 0) {
+      NutriApp.showToast('Please assign at least one learning module to the group.', 'warning');
+      return;
+    }
+
+    group.assignedModules = assigned;
+    NutriStorage.updateGroup(group);
+
+    // Also update assignedModules on all enrolled child records
+    const children = NutriStorage.getChildren();
+    let updatedChildCount = 0;
+    children.forEach(c => {
+      if ((group.enrolledChildIds || []).includes(c.id)) {
+        c.assignedModules = Array.from(new Set([...(c.assignedModules || []), ...assigned]));
+        updatedChildCount++;
+      }
+    });
+    NutriStorage.saveChildren(children);
+
+    NutriApp.closeModal('modal-assign-lessons');
+    this.renderGroups();
+    this.renderRegistryTable();
+    NutriApp.showToast(`✅ ${assigned.length} lessons assigned to "${group.name}". Enrolled children updated!`, 'success');
+  },
+
+  openEnrollChildrenModal(groupId) {
+    const group = NutriStorage.getGroups().find(g => g.id === groupId);
+    if (!group) return;
+
+    document.getElementById('enroll-group-id').value = group.id;
+    document.getElementById('enroll-group-title').textContent = group.name;
+
+    const children = NutriStorage.getChildren().filter(c => c.barangay === group.barangay || !group.barangay);
+    const container = document.getElementById('enroll-children-checkboxes');
+    if (container) {
+      if (children.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted); font-size:0.84rem;">No registered children in this barangay yet.</p>';
+      } else {
+        container.innerHTML = children.map(c => {
+          const isChecked = (group.enrolledChildIds || []).includes(c.id);
+          return `
+            <label style="display:flex; align-items:center; gap:0.6rem; padding:0.5rem 0.75rem; background:#F8FAFC; border:1px solid var(--border-light); border-radius:6px; margin-bottom:0.35rem; cursor:pointer;">
+              <input type="checkbox" name="enrolledChild" value="${c.id}" ${isChecked ? 'checked' : ''} style="accent-color:var(--color-primary-600);">
+              <div style="flex:1;">
+                <strong style="color:var(--color-primary-900); font-size:0.84rem;">${c.name}</strong>
+                <span style="font-size:0.76rem; color:var(--text-muted);"> • Parent: ${c.parentName} (${c.ageMonths} mos, ${c.status})</span>
+              </div>
+            </label>
+          `;
+        }).join('');
+      }
+    }
+
+    NutriApp.openModal('modal-enroll-children');
+  },
+
+  handleSaveEnrolledChildren(form) {
+    const groupId = document.getElementById('enroll-group-id').value;
+    const group = NutriStorage.getGroups().find(g => g.id === groupId);
+    if (!group) return;
+
+    const checkedBoxes = form.querySelectorAll('input[name="enrolledChild"]:checked');
+    group.enrolledChildIds = Array.from(checkedBoxes).map(cb => cb.value);
+    NutriStorage.updateGroup(group);
+
+    NutriApp.closeModal('modal-enroll-children');
+    this.renderGroups();
+    NutriApp.showToast(`Updated members for "${group.name}" (${group.enrolledChildIds.length} enrolled).`, 'success');
+  },
+
+  openGroupAdviceModal(groupId) {
+    const group = NutriStorage.getGroups().find(g => g.id === groupId);
+    if (!group) return;
+
+    document.getElementById('advice-group-id').value = group.id;
+    document.getElementById('advice-group-title').textContent = group.name;
+    document.getElementById('advice-group-notes').value = group.adviceNotes || '';
+
+    NutriApp.openModal('modal-group-advice');
+  },
+
+  handleSendGroupAdvice(form) {
+    const groupId = document.getElementById('advice-group-id').value;
+    const group = NutriStorage.getGroups().find(g => g.id === groupId);
+    if (!group) return;
+
+    const advice = form.elements['adviceText'].value.trim();
+    if (!advice) {
+      NutriApp.showToast('Please enter an advisory note or message.', 'warning');
+      return;
+    }
+
+    group.adviceNotes = advice;
+    NutriStorage.updateGroup(group);
+
+    // Also push an announcement to the community feed targeted to this barangay
+    if (window.AnnouncementsModule) {
+      const newAnn = {
+        id: 'ann-' + Date.now(),
+        title: `📢 Advisory for ${group.name}`,
+        category: 'ADVISORY',
+        authorRole: 'chw',
+        authorName: group.facilitator || 'Health Worker',
+        authorTitle: 'Barangay Nutrition Scholar',
+        date: 'Today',
+        targetRole: 'parent',
+        targetBarangays: [group.barangay],
+        content: advice,
+        badge: 'Priority'
+      };
+      const annList = JSON.parse(localStorage.getItem(NutriStorage.ANNOUNCEMENTS_KEY) || '[]');
+      annList.unshift(newAnn);
+      localStorage.setItem(NutriStorage.ANNOUNCEMENTS_KEY, JSON.stringify(annList));
+      AnnouncementsModule.renderAllFeeds();
+    }
+
+    NutriApp.closeModal('modal-group-advice');
+    this.renderGroups();
+    NutriApp.showToast(`📢 Advice broadcasted to parents in ${group.name}!`, 'success');
   }
 };
+

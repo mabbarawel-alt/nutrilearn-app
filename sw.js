@@ -1,11 +1,12 @@
-// NutriLearn Service Worker - v2.4.0
-const CACHE_NAME = 'nutrilearn-v2.4.0';
+// NutriLearn Service Worker - v2.7.0
+const CACHE_NAME = 'nutrilearn-v2.7.0';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
   './css/styles.css',
   './css/components.css',
+  './js/i18n.js',
   './js/app.js',
   './js/data.js',
   './js/healthWorker.js',

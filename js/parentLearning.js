@@ -21,10 +21,11 @@ const ParentModule = {
     const container = document.getElementById('parent-modules-container');
     if (!container) return;
 
+    const modules = NutriStorage.getModules();
     const progress = NutriStorage.getParentProgress();
     const completedList = progress.completedModules || [];
 
-    container.innerHTML = NUTRI_DATA.modules.map(mod => {
+    container.innerHTML = modules.map(mod => {
       const isCompleted = completedList.includes(mod.id);
       const score = progress.quizScores ? progress.quizScores[mod.id] : null;
 
@@ -67,8 +68,8 @@ const ParentModule = {
   updateProgressHeader() {
     const progress = NutriStorage.getParentProgress();
     const completed = progress.completedModules || [];
-    const total = NUTRI_DATA.modules.length;
-    const pct = Math.round((completed.length / total) * 100);
+    const total = NutriStorage.getModules().length;
+    const pct = total > 0 ? Math.round((completed.length / total) * 100) : 0;
 
     const barFill = document.getElementById('parent-progress-fill');
     const textLabel = document.getElementById('parent-progress-text');
@@ -97,7 +98,7 @@ const ParentModule = {
 
   // Open Lesson Reader
   openLesson(moduleId) {
-    const mod = NUTRI_DATA.modules.find(m => m.id === moduleId);
+    const mod = NutriStorage.getModules().find(m => m.id === moduleId);
     if (!mod) return;
 
     this.currentModuleId = moduleId;
@@ -108,18 +109,18 @@ const ParentModule = {
       <div style="background:#F0FDF4; border-left:4px solid #16A34A; padding:0.85rem 1rem; border-radius:4px; margin-bottom:1.25rem;">
         <strong style="color:#14532D;">What you will learn in this lesson:</strong>
         <ul style="margin-left:1.25rem; margin-top:0.35rem; line-height:1.5; color:#1F2937; font-size:0.88rem;">
-          ${mod.objectives.map(o => `<li>${o}</li>`).join('')}
+          ${(mod.objectives || []).map(o => `<li>${o}</li>`).join('')}
         </ul>
       </div>
     `;
 
-    document.getElementById('lesson-body-content').innerHTML = objHtml + mod.content;
+    document.getElementById('lesson-body-content').innerHTML = objHtml + (mod.content || '<p>Lesson content coming soon.</p>');
     NutriApp.openModal('modal-lesson-viewer');
   },
 
   // Start Interactive Quiz
   startQuiz(moduleId) {
-    const mod = NUTRI_DATA.modules.find(m => m.id === moduleId);
+    const mod = NutriStorage.getModules().find(m => m.id === moduleId);
     if (!mod || !mod.quiz || !mod.quiz.length) {
       NutriApp.showToast('No quiz available for this module.', 'info');
       return;
@@ -137,7 +138,7 @@ const ParentModule = {
 
   // Render current quiz question
   renderCurrentQuizQuestion() {
-    const mod = NUTRI_DATA.modules.find(m => m.id === this.currentModuleId);
+    const mod = NutriStorage.getModules().find(m => m.id === this.currentModuleId);
     const q = mod.quiz[this.currentQuizQuestionIndex];
     const totalQuestions = mod.quiz.length;
 
@@ -170,7 +171,7 @@ const ParentModule = {
   // User taps an option
   selectQuizOption(index) {
     this.selectedQuizOption = index;
-    const mod = NUTRI_DATA.modules.find(m => m.id === this.currentModuleId);
+    const mod = NutriStorage.getModules().find(m => m.id === this.currentModuleId);
     const q = mod.quiz[this.currentQuizQuestionIndex];
 
     for (let i = 0; i < q.options.length; i++) {
@@ -186,7 +187,7 @@ const ParentModule = {
       return;
     }
 
-    const mod = NUTRI_DATA.modules.find(m => m.id === this.currentModuleId);
+    const mod = NutriStorage.getModules().find(m => m.id === this.currentModuleId);
     const q = mod.quiz[this.currentQuizQuestionIndex];
     const isCorrect = this.selectedQuizOption === q.answerIndex;
 
@@ -229,7 +230,7 @@ const ParentModule = {
 
   // Advance to next question or complete
   nextQuestion() {
-    const mod = NUTRI_DATA.modules.find(m => m.id === this.currentModuleId);
+    const mod = NutriStorage.getModules().find(m => m.id === this.currentModuleId);
     if (this.currentQuizQuestionIndex < mod.quiz.length - 1) {
       this.currentQuizQuestionIndex++;
       this.selectedQuizOption = null;
@@ -241,7 +242,7 @@ const ParentModule = {
 
   // Calculate final score, save progress, and award certificate
   finishQuiz() {
-    const mod = NUTRI_DATA.modules.find(m => m.id === this.currentModuleId);
+    const mod = NutriStorage.getModules().find(m => m.id === this.currentModuleId);
     const totalQ = mod.quiz.length;
     let correctCount = 0;
     for (let i = 0; i < totalQ; i++) {

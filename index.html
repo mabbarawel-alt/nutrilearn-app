@@ -25,8 +25,8 @@
     rel="stylesheet">
 
   <!-- Core Stylesheets -->
-  <link rel="stylesheet" href="css/styles.css?v=2.5">
-  <link rel="stylesheet" href="css/components.css?v=2.5">
+  <link rel="stylesheet" href="css/styles.css?v=3.1">
+  <link rel="stylesheet" href="css/components.css?v=3.1">
 </head>
 
 <body>
@@ -40,28 +40,48 @@
       <div class="startup-brand-header">
         <img src="assets/icons/malunggay-logo.png" alt="NutriLearn Logo" class="startup-leaf-logo">
         <h1 class="startup-brand-title">NutriLearn</h1>
-        <div id="startup-db-status" class="db-status-badge" style="margin-top: 0.5rem; display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; padding: 4px 12px; border-radius: 9999px; background: #FEF3C7; color: #92400E; font-weight: 600; border: 1px solid #FDE68A;">
-          <span class="db-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #F59E0B; display: inline-block;"></span>
+        <div id="startup-db-status" class="db-status-badge"
+          style="margin-top: 0.5rem; display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; padding: 4px 12px; border-radius: 9999px; background: #FEF3C7; color: #92400E; font-weight: 600; border: 1px solid #FDE68A;">
+          <span class="db-dot"
+            style="width: 8px; height: 8px; border-radius: 50%; background: #F59E0B; display: inline-block;"></span>
           <span id="startup-db-status-text">Database: Connecting...</span>
+        </div>
+
+        <!-- Top Language Selector Pill (Instantly visible without scrolling) -->
+        <div class="startup-top-lang-pill"
+          style="margin-top: 0.75rem; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #FFFFFF; padding: 4px 8px; border-radius: 9999px; border: 1.5px solid #CBD5E1; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+          <span style="font-size: 0.76rem; font-weight: 700; color: #475569; margin-left: 4px; margin-right: 2px;">🌐
+            Wika / Lang:</span>
+          <button type="button" class="btn-lang-choice active" id="btn-lang-top-fil"
+            onclick="NutriI18n.setLanguage('fil')"
+            style="padding: 4px 12px; border-radius: 9999px; border: none; font-size: 0.78rem; font-weight: 700; cursor: pointer; background: #0E3D26; color: #FFFFFF; transition: all 0.2s;">
+            🇵🇭 Filipino
+          </button>
+          <button type="button" class="btn-lang-choice" id="btn-lang-top-en" onclick="NutriI18n.setLanguage('en')"
+            style="padding: 4px 12px; border-radius: 9999px; border: none; font-size: 0.78rem; font-weight: 600; cursor: pointer; background: transparent; color: #475569; transition: all 0.2s;">
+            🇺🇸 English
+          </button>
         </div>
       </div>
 
       <div class="startup-card">
         <!-- ====================================================================
-             PART 1: SELECT YOUR USER PORTAL (Matches user screenshot)
+             SCREEN 1: SELECT YOUR ROLE TO CONTINUE (SIGN IN FLOW)
              ==================================================================== -->
-        <div id="startup-part-1">
-          <!-- 3 Vertical Portal Choice Cards -->
+        <div id="screen-role-signin">
+          <div class="auth-role-select-title" id="lbl-signin-role-select-title">Select your role to continue</div>
+
           <div class="portal-choices-list">
             <!-- Option 1: Parent / Guardian -->
             <div class="portal-choice-card selected" data-role="parent"
-              onclick="NutriApp.selectStartupRoleCard('parent')">
+              onclick="NutriApp.selectRole('parent', 'signin')">
               <div class="portal-card-icon">
-                <span class="portal-emoji-icon">👩‍👧</span>
+                <span style="font-size: 1.5rem;">👩‍👧</span>
               </div>
               <div class="portal-card-text">
-                <div class="portal-card-title">Parent / Guardian</div>
-                <div class="portal-card-desc">Access nutrition lessons, meal plans, and track your child's growth.</div>
+                <div class="portal-card-title" id="card-signin-parent-title">Parent / Guardian</div>
+                <div class="portal-card-desc" id="card-signin-parent-desc">Access nutrition lessons, meal plans, and
+                  track your child's growth.</div>
               </div>
               <div class="portal-radio">
                 <div class="portal-radio-dot"></div>
@@ -69,13 +89,14 @@
             </div>
 
             <!-- Option 2: Health Worker -->
-            <div class="portal-choice-card" data-role="chw" onclick="NutriApp.selectStartupRoleCard('chw')">
+            <div class="portal-choice-card" data-role="chw" onclick="NutriApp.selectRole('chw', 'signin')">
               <div class="portal-card-icon">
-                <span class="portal-emoji-icon">🩺</span>
+                <span style="font-size: 1.5rem;">🩺</span>
               </div>
               <div class="portal-card-text">
-                <div class="portal-card-title">Health Worker</div>
-                <div class="portal-card-desc">Manage parent groups, post announcements, and submit child records.</div>
+                <div class="portal-card-title" id="card-signin-chw-title">Health Worker</div>
+                <div class="portal-card-desc" id="card-signin-chw-desc">Manage parent groups, post announcements, and
+                  submit child records.</div>
               </div>
               <div class="portal-radio">
                 <div class="portal-radio-dot"></div>
@@ -83,13 +104,14 @@
             </div>
 
             <!-- Option 3: Administrator -->
-            <div class="portal-choice-card" data-role="mho" onclick="NutriApp.selectStartupRoleCard('mho')">
+            <div class="portal-choice-card" data-role="mho" onclick="NutriApp.selectRole('mho', 'signin')">
               <div class="portal-card-icon">
-                <span class="portal-emoji-icon">📊</span>
+                <span style="font-size: 1.5rem;">📊</span>
               </div>
               <div class="portal-card-text">
-                <div class="portal-card-title">Administrator</div>
-                <div class="portal-card-desc">View field records, analytics, and manage program content.</div>
+                <div class="portal-card-title" id="card-signin-mho-title">Administrator</div>
+                <div class="portal-card-desc" id="card-signin-mho-desc">View field records, analytics, and manage
+                  program content.</div>
               </div>
               <div class="portal-radio">
                 <div class="portal-radio-dot"></div>
@@ -98,206 +120,212 @@
           </div>
 
           <!-- Continue Button -->
-          <button type="button" id="btn-portal-continue" class="btn-portal-continue"
-            onclick="NutriApp.proceedWithSelectedRole()">
+          <button type="button" id="btn-signin-role-continue" class="btn-auth-continue"
+            onclick="NutriApp.proceedToSignInCredentials()">
             Continue
           </button>
 
-          <!-- Register Footer Link -->
-          <div class="portal-footer-register">
-            Don't have an account? <a href="javascript:void(0)" onclick="NutriApp.setStartupPhase('signup')">Register
-              here</a>
+          <!-- Footer Link to Register -->
+          <div class="auth-footer-prompt" id="footer-prompt-signin">
+            Don't have an account? <a href="javascript:void(0)" onclick="NutriApp.goToRoleSelectSignUp()"
+              id="link-goto-register">Register here</a>
           </div>
         </div>
 
         <!-- ====================================================================
-             PHASE 2: DEDICATED SIGN IN ONLY (1 Phase Only)
+             SCREEN 2: CREATE ACCOUNT - WHO ARE YOU REGISTERING AS? (SIGN UP FLOW)
              ==================================================================== -->
-        <div id="startup-phase-signin" style="display: none;">
-          <div class="startup-form-card">
-            <!-- Header with Back button -->
-            <div class="auth-role-banner" style="margin-bottom: 1.25rem;">
-              <div>
-                <div
-                  style="font-size: 0.75rem; text-transform: uppercase; color: #64748B; font-weight: 600; letter-spacing: 0.04em;">
-                  Sign In</div>
-                <div id="startup-signin-role-title" style="font-weight: 700; font-size: 1.15rem; color: #1E293B;">
-                  Parent / Guardian
-                </div>
+        <div id="screen-role-signup" style="display: none;">
+          <h2 class="auth-display-title" id="lbl-signup-title">Create account</h2>
+          <div class="auth-display-subtitle" id="lbl-signup-subtitle">Who are you registering as?</div>
+
+          <div class="portal-choices-list">
+            <!-- Option 1: Parent / Guardian -->
+            <div class="portal-choice-card selected" data-role="parent"
+              onclick="NutriApp.selectRole('parent', 'signup')">
+              <div class="portal-card-icon">
+                <span style="font-size: 1.5rem;">👩‍👧</span>
               </div>
-              <button type="button" class="btn btn-outline btn-sm" onclick="NutriApp.setStartupPhase(1)"
-                style="border-color: #CBD5E1; color: #475569; padding: 0.35rem 0.75rem; font-size: 0.82rem;">
-                ← Back
-              </button>
+              <div class="portal-card-text">
+                <div class="portal-card-title" id="card-signup-parent-title">Parent / Guardian</div>
+                <div class="portal-card-desc" id="card-signup-parent-desc">Track your child's nutrition and access
+                  learning modules.</div>
+              </div>
+              <div class="portal-radio">
+                <div class="portal-radio-dot"></div>
+              </div>
             </div>
 
-            <!-- Sign In Form -->
-            <form id="startup-signin-form" onsubmit="NutriApp.submitStartupSignIn(event)">
-              <div class="form-group" style="margin-bottom: 1rem;">
-                <label class="form-label"
-                  style="font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem; display: block;">Email
-                  or Username</label>
-                <input type="text" id="startup-login-username" name="loginUsername" class="form-control" required
-                  placeholder="name@nutrilearn.ph" value="maria.parent@nutrilearn.ph"
-                  style="border: 1.5px solid #DDD7CD; border-radius: 10px; padding: 0.65rem 0.85rem;">
+            <!-- Option 2: Health Worker -->
+            <div class="portal-choice-card" data-role="chw" onclick="NutriApp.selectRole('chw', 'signup')">
+              <div class="portal-card-icon">
+                <span style="font-size: 1.5rem;">🩺</span>
               </div>
-
-              <div class="form-group" style="margin-bottom: 1.25rem;">
-                <label class="form-label"
-                  style="font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem; display: block;">Password</label>
-                <input type="password" name="loginPassword" class="form-control" required value="password123"
-                  style="border: 1.5px solid #DDD7CD; border-radius: 10px; padding: 0.65rem 0.85rem;">
+              <div class="portal-card-text">
+                <div class="portal-card-title" id="card-signup-chw-title">Health Worker</div>
+                <div class="portal-card-desc" id="card-signup-chw-desc">Monitor families, record child data, and relay
+                  announcements.</div>
               </div>
-
-              <button type="submit" id="btn-startup-submit-signin" class="btn-portal-continue"
-                style="margin-top: 0.5rem; margin-bottom: 1rem;">
-                Sign In
-              </button>
-
-              <!-- Quick Demo Login -->
-              <div class="auth-demo-box"
-                style="background: #FBF9F5; border: 1px dashed #C8D8C9; border-radius: 10px; padding: 0.75rem;">
-                <button type="button" class="btn btn-outline btn-sm" id="btn-startup-demo-login"
-                  onclick="NutriApp.startupQuickDemoLogin()"
-                  style="width: 100%; background: #FFFFFF; border-color: #CBD5E1; color: #334155; font-weight: 600;">
-                  Demo Login as <strong>Maria Ramos (Parent)</strong>
-                </button>
+              <div class="portal-radio">
+                <div class="portal-radio-dot"></div>
               </div>
-            </form>
+            </div>
+
+            <!-- Option 3: Administrator -->
+            <div class="portal-choice-card" data-role="mho" onclick="NutriApp.selectRole('mho', 'signup')">
+              <div class="portal-card-icon">
+                <span style="font-size: 1.5rem;">📊</span>
+              </div>
+              <div class="portal-card-text">
+                <div class="portal-card-title" id="card-signup-mho-title">Administrator</div>
+                <div class="portal-card-desc" id="card-signup-mho-desc">Oversee program data, users, and post health
+                  announcements.</div>
+              </div>
+              <div class="portal-radio">
+                <div class="portal-radio-dot"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Continue Button -->
+          <button type="button" id="btn-signup-role-continue" class="btn-auth-continue"
+            onclick="NutriApp.proceedToSignUpDetails()">
+            Continue
+          </button>
+
+          <!-- Footer Link to Sign In -->
+          <div class="auth-footer-prompt" id="footer-prompt-signup">
+            Already have an account? <a href="javascript:void(0)" onclick="NutriApp.goToRoleSelectSignIn()"
+              id="link-goto-signin">Sign in</a>
           </div>
         </div>
 
         <!-- ====================================================================
-             PHASE 3: DEDICATED SIGN UP / REGISTRATION ONLY (1 Phase Only)
+             SCREEN 3: YOUR DETAILS (CREATE ACCOUNT DETAILS FORM)
              ==================================================================== -->
-        <div id="startup-phase-signup" style="display: none;">
-          <div class="startup-form-card">
-            <!-- Header with Back button -->
-            <div class="auth-role-banner" style="margin-bottom: 1.25rem;">
-              <div>
-                <div
-                  style="font-size: 0.75rem; text-transform: uppercase; color: #64748B; font-weight: 600; letter-spacing: 0.04em;">
-                  Create Account</div>
-                <div id="startup-signup-role-title" style="font-weight: 700; font-size: 1.15rem; color: #1E293B;">
-                  Parent / Guardian
-                </div>
-              </div>
-              <button type="button" class="btn btn-outline btn-sm" onclick="NutriApp.setStartupPhase(1)"
-                style="border-color: #CBD5E1; color: #475569; padding: 0.35rem 0.75rem; font-size: 0.82rem;">
-                ← Back
-              </button>
+        <div id="screen-auth-details" style="display: none;">
+          <button type="button" class="auth-back-btn" onclick="NutriApp.goToRoleSelectSignUp()"
+            id="btn-back-to-signup-roles">
+            ← Back
+          </button>
+
+          <h2 class="auth-display-title" id="lbl-details-title">Your details</h2>
+          <div class="auth-display-subtitle" id="lbl-details-subtitle">Create your NutriLearn account</div>
+
+          <form id="form-auth-details" onsubmit="NutriApp.submitRegistration(event)">
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <label class="form-label" id="lbl-reg-fullname"
+                style="font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem; display: block;">
+                Full Name *
+              </label>
+              <input type="text" id="reg-fullname-input" name="regFullName" class="form-control" required
+                placeholder="e.g. Maria Santos"
+                style="border: 1.5px solid #DDD7CD; border-radius: 10px; padding: 0.75rem 0.95rem;">
             </div>
 
-            <!-- Sign Up Form -->
-            <form id="startup-signup-form" onsubmit="NutriApp.submitStartupSignUp(event)">
-              <div class="form-group" style="margin-bottom: 1rem;">
-                <label class="form-label"
-                  style="font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem; display: block;">Full
-                  Name</label>
-                <input type="text" name="regName" class="form-control" required placeholder="e.g. Maria Santos"
-                  style="border: 1.5px solid #DDD7CD; border-radius: 10px; padding: 0.65rem 0.85rem;">
-              </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <label class="form-label" id="lbl-reg-barangay"
+                style="font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem; display: block;">
+                Barangay / Address *
+              </label>
+              <input type="text" id="reg-barangay-input" name="regBarangayAddress" class="form-control" required
+                placeholder="e.g. Barangay Pinyahan, Quezon City"
+                style="border: 1.5px solid #DDD7CD; border-radius: 10px; padding: 0.75rem 0.95rem;">
+            </div>
 
-              <div class="grid-2" style="margin-bottom: 1rem;">
-                <div class="form-group">
-                  <label class="form-label"
-                    style="font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem; display: block;">Email
-                    or Mobile</label>
-                  <input type="text" name="regEmail" class="form-control" required placeholder="e.g. maria@gmail.com"
-                    style="border: 1.5px solid #DDD7CD; border-radius: 10px; padding: 0.65rem 0.85rem;">
-                </div>
-                <div class="form-group">
-                  <label class="form-label"
-                    style="font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem; display: block;">Password</label>
-                  <input type="password" name="regPassword" class="form-control" required placeholder="Create password"
-                    style="border: 1.5px solid #DDD7CD; border-radius: 10px; padding: 0.65rem 0.85rem;">
-                </div>
-              </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <label class="form-label" id="lbl-reg-email"
+                style="font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem; display: block;">
+                Email Address *
+              </label>
+              <input type="email" id="reg-email-input" name="regEmailAddress" class="form-control" required
+                placeholder="you@example.com"
+                style="border: 1.5px solid #DDD7CD; border-radius: 10px; padding: 0.75rem 0.95rem;">
+            </div>
 
-              <!-- Role-Specific Fields for Parent -->
-              <div id="startup-signup-parent">
-                <div class="grid-2" style="margin-bottom: 1rem;">
-                  <div class="form-group">
-                    <label class="form-label"
-                      style="font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem; display: block;">Child's
-                      Name</label>
-                    <input type="text" name="regChildName" class="form-control" placeholder="e.g. Ethan Santos"
-                      style="border: 1.5px solid #DDD7CD; border-radius: 10px; padding: 0.65rem 0.85rem;">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label"
-                      style="font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem; display: block;">Child
-                      Age in Months</label>
-                    <input type="number" name="regChildAge" class="form-control" min="6" max="59" value="18"
-                      style="border: 1.5px solid #DDD7CD; border-radius: 10px; padding: 0.65rem 0.85rem;">
-                  </div>
-                </div>
-                <div class="form-group" style="margin-bottom: 1rem;">
-                  <label class="form-label"
-                    style="font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem; display: block;">Barangay
-                    Residence</label>
-                  <select name="regBarangay" class="form-select"
-                    style="border: 1.5px solid #DDD7CD; border-radius: 10px; padding: 0.65rem 0.85rem;">
-                    <option value="Barangay San Jose">Barangay San Jose</option>
-                    <option value="Barangay Santa Maria">Barangay Santa Maria</option>
-                    <option value="Barangay San Isidro">Barangay San Isidro</option>
-                    <option value="Barangay Poblacion">Barangay Poblacion</option>
-                  </select>
-                </div>
+            <div class="grid-2" style="margin-bottom: 1.25rem;">
+              <div class="form-group">
+                <label class="form-label" id="lbl-reg-password"
+                  style="font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem; display: block;">
+                  Password *
+                </label>
+                <input type="password" id="reg-password-input" name="regPassword" class="form-control" required
+                  placeholder="Min. 6 characters" minlength="6"
+                  style="border: 1.5px solid #DDD7CD; border-radius: 10px; padding: 0.75rem 0.95rem;">
               </div>
-
-              <!-- Role-Specific Fields for BHW -->
-              <div id="startup-signup-bhw" style="display: none;">
-                <div class="grid-2" style="margin-bottom: 1rem;">
-                  <div class="form-group">
-                    <label class="form-label"
-                      style="font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem; display: block;">BHW
-                      Accreditation ID</label>
-                    <input type="text" name="regBhwId" class="form-control" placeholder="e.g. BHW-2026-4412"
-                      style="border: 1.5px solid #DDD7CD; border-radius: 10px; padding: 0.65rem 0.85rem;">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label"
-                      style="font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem; display: block;">Barangay
-                      Assignment</label>
-                    <select name="regBhwBarangay" class="form-select"
-                      style="border: 1.5px solid #DDD7CD; border-radius: 10px; padding: 0.65rem 0.85rem;">
-                      <option value="Barangay San Jose">Barangay San Jose</option>
-                      <option value="Barangay Santa Maria">Barangay Santa Maria</option>
-                      <option value="Barangay San Isidro">Barangay San Isidro</option>
-                      <option value="Barangay Poblacion">Barangay Poblacion</option>
-                    </select>
-                  </div>
-                </div>
+              <div class="form-group">
+                <label class="form-label" id="lbl-reg-confirm-password"
+                  style="font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem; display: block;">
+                  Confirm Password *
+                </label>
+                <input type="password" id="reg-confirm-password-input" name="regConfirmPassword" class="form-control"
+                  required placeholder="Repeat password" minlength="6"
+                  style="border: 1.5px solid #DDD7CD; border-radius: 10px; padding: 0.75rem 0.95rem;">
               </div>
+            </div>
 
-              <!-- Role-Specific Fields for Admin -->
-              <div id="startup-signup-mho" style="display: none;">
-                <div class="grid-2" style="margin-bottom: 1rem;">
-                  <div class="form-group">
-                    <label class="form-label"
-                      style="font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem; display: block;">Office
-                      / Department</label>
-                    <input type="text" name="regMhoDept" class="form-control" value="Municipal Health Office"
-                      style="border: 1.5px solid #DDD7CD; border-radius: 10px; padding: 0.65rem 0.85rem;">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label"
-                      style="font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem; display: block;">Official
-                      Designation</label>
-                    <input type="text" name="regMhoDesignation" class="form-control"
-                      placeholder="e.g. Municipal Nutrition Action Officer"
-                      style="border: 1.5px solid #DDD7CD; border-radius: 10px; padding: 0.65rem 0.85rem;">
-                  </div>
-                </div>
-              </div>
+            <button type="submit" id="btn-details-submit" class="btn-auth-submit">
+              Next: Add Children →
+            </button>
 
-              <button type="submit" id="btn-startup-submit-signup" class="btn-portal-continue"
-                style="margin-top: 0.5rem; margin-bottom: 1rem;">
-                Create Account
-              </button>
-            </form>
+            <div class="auth-footer-prompt">
+              Already have an account? <a href="javascript:void(0)" onclick="NutriApp.goToRoleSelectSignIn()">Sign
+                in</a>
+            </div>
+          </form>
+        </div>
+
+        <!-- ====================================================================
+             SCREEN 4: SIGN IN CREDENTIALS SCREEN
+             ==================================================================== -->
+        <div id="screen-auth-signin" style="display: none;">
+          <button type="button" class="auth-back-btn" onclick="NutriApp.goToRoleSelectSignIn()"
+            id="btn-back-to-signin-roles">
+            ← Back
+          </button>
+
+          <!-- Signing in as Badge (Screenshot 4) -->
+          <div class="signing-in-as-card">
+            <div class="signing-in-as-icon" id="signin-badge-icon">👩‍👧</div>
+            <div>
+              <div class="signing-in-as-title" id="signin-badge-title">Parent / Guardian</div>
+              <div class="signing-in-as-sub" id="signin-badge-sub">Signing in as</div>
+            </div>
           </div>
+
+          <h2 class="auth-display-title" id="lbl-signin-title">Sign in</h2>
+          <div class="auth-display-subtitle" id="lbl-signin-subtitle">Enter your credentials to access NutriLearn</div>
+
+          <form id="form-auth-signin" onsubmit="NutriApp.submitSignIn(event)">
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <label class="form-label" id="lbl-signin-email"
+                style="font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem; display: block;">
+                Email address
+              </label>
+              <input type="text" id="input-signin-email" name="signinEmail" class="form-control" required
+                placeholder="you@example.com"
+                style="border: 1.5px solid #DDD7CD; border-radius: 10px; padding: 0.75rem 0.95rem;">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.25rem;">
+              <label class="form-label" id="lbl-signin-password"
+                style="font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem; display: block;">
+                Password
+              </label>
+              <input type="password" id="input-signin-password" name="signinPassword" class="form-control" required
+                placeholder="••••••••"
+                style="border: 1.5px solid #DDD7CD; border-radius: 10px; padding: 0.75rem 0.95rem;">
+            </div>
+
+            <button type="submit" id="btn-signin-submit" class="btn-auth-submit">
+              Sign in
+            </button>
+
+            <div class="auth-footer-prompt">
+              Don't have an account? <a href="javascript:void(0)" onclick="NutriApp.goToRoleSelectSignUp()">Register
+                here</a>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -332,19 +360,27 @@
           <!-- Cloud Database Live Status Indicator -->
           <div id="header-db-status" class="db-status-badge" title="Live Supabase Cloud Database Status"
             style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.76rem; padding: 4px 10px; border-radius: 9999px; background: rgba(255, 255, 255, 0.15); color: #FFFFFF; font-weight: 600; border: 1px solid rgba(255, 255, 255, 0.25);">
-            <span class="db-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #F59E0B; display: inline-block;"></span>
+            <span class="db-dot"
+              style="width: 8px; height: 8px; border-radius: 50%; background: #F59E0B; display: inline-block;"></span>
             <span id="header-db-status-text">Cloud DB: Connecting...</span>
           </div>
 
           <!-- User Profile Badge -->
-          <div class="user-profile-badge" id="header-user-btn" onclick="NutriApp.showStartupScreen('role-choice')"
-            title="Click to switch account or portal">
+          <div class="user-profile-badge" id="header-user-btn" onclick="NutriApp.openAccountSettingsModal()"
+            title="Click to view or edit your account settings & profile">
             <div class="user-avatar-circle" id="header-user-avatar">M</div>
             <div class="user-badge-details">
               <span class="user-badge-name" id="header-user-name">Maria Ramos</span>
               <span class="user-badge-role" id="header-user-role">Parent</span>
             </div>
           </div>
+
+          <!-- Language Switcher in Header -->
+          <button class="btn-lang-header-toggle" onclick="NutriI18n.toggleLanguage()" id="btn-header-lang"
+            title="Palitan ang Wika / Switch Language"
+            style="display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); border-radius: 9999px; padding: 4px 11px; color: #FFFFFF; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: background 0.2s;">
+            <span id="header-lang-label">🇵🇭 Filipino</span>
+          </button>
 
           <!-- Sign Out Button -->
           <button class="btn-signout" onclick="NutriApp.logout()" title="Sign out of NutriLearn">
@@ -373,35 +409,51 @@
        ========================================================================== -->
     <!-- 1. Parent Sub-Nav (Shown ONLY for Parents) -->
     <nav class="sub-nav" id="parent-sub-nav">
-      <div class="sub-nav-container">
-        <span class="sub-nav-link active parent-sub-link" data-tab="dashboard">📊 Parent Dashboard</span>
-        <span class="sub-nav-link parent-sub-link" data-tab="announcements">📢 Community Bulletins</span>
-        <span class="sub-nav-link parent-sub-link" data-tab="learning">📚 Learning Modules &amp; Quizzes</span>
-        <span class="sub-nav-link parent-sub-link" data-tab="meal-planner">🍲 Pinggang Pinoy Meal Planner</span>
-        <span class="sub-nav-link parent-sub-link" data-tab="growth-tracker">📈 My Child Growth Record</span>
+      <div class="sub-nav-wrapper">
+        <button type="button" class="sub-nav-arrow sub-nav-arrow-left" onclick="NutriApp.scrollSubNav(this, -240)" title="I-scroll pakaliwa (Scroll Left)" aria-label="Scroll Left">‹</button>
+        <div class="sub-nav-container">
+          <span class="sub-nav-link active parent-sub-link" data-tab="dashboard">📊 Parent Dashboard</span>
+          <span class="sub-nav-link parent-sub-link" data-tab="announcements">📢 Community Bulletins</span>
+          <span class="sub-nav-link parent-sub-link" data-tab="learning">📚 Learning Modules &amp; Quizzes</span>
+          <span class="sub-nav-link parent-sub-link" data-tab="meal-planner">🍲 Pinggang Pinoy Meal Planner</span>
+          <span class="sub-nav-link parent-sub-link" data-tab="growth-tracker">📈 My Child Growth Record</span>
+        </div>
+        <button type="button" class="sub-nav-arrow sub-nav-arrow-right" onclick="NutriApp.scrollSubNav(this, 240)" title="I-scroll pakanan (Scroll Right)" aria-label="Scroll Right">›</button>
       </div>
     </nav>
 
-    <!-- 2. BHW Sub-Nav (Shown ONLY for BHW / BNS) -->
+    <!-- 2. BHW Sub-Nav (Shown ONLY for BHW / BNS / Data Collectors) -->
     <nav class="sub-nav" id="chw-sub-nav" style="display: none;">
-      <div class="sub-nav-container">
-        <span class="sub-nav-link active chw-sub-link" data-tab="dashboard">📊 BHW Dashboard</span>
-        <span class="sub-nav-link chw-sub-link" data-tab="announcements">📢 Bulletins &amp; Advisories</span>
-        <span class="sub-nav-link chw-sub-link" data-tab="registry">📋 Malnutrition Registry</span>
-        <span class="sub-nav-link chw-sub-link" data-tab="calculator">📐 WHO Growth &amp; MUAC Calculator</span>
-        <span class="sub-nav-link chw-sub-link" data-tab="reporting">📤 Submit Reports to MHO</span>
+      <div class="sub-nav-wrapper">
+        <button type="button" class="sub-nav-arrow sub-nav-arrow-left" onclick="NutriApp.scrollSubNav(this, -240)" title="I-scroll pakaliwa (Scroll Left)" aria-label="Scroll Left">‹</button>
+        <div class="sub-nav-container">
+          <span class="sub-nav-link active chw-sub-link" data-tab="dashboard">📊 BHW Dashboard</span>
+          <span class="sub-nav-link chw-sub-link" data-tab="announcements">📢 Bulletins &amp; Advisories</span>
+          <span class="sub-nav-link chw-sub-link" data-tab="registry">📋 Malnutrition Registry</span>
+          <span class="sub-nav-link chw-sub-link" data-tab="groups">👥 Parent Groups &amp; Lessons</span>
+          <span class="sub-nav-link chw-sub-link" data-tab="calculator">📐 WHO Growth &amp; MUAC Calculator</span>
+          <span class="sub-nav-link chw-sub-link" data-tab="reporting">📤 Submit Reports to MHO</span>
+        </div>
+        <button type="button" class="sub-nav-arrow sub-nav-arrow-right" onclick="NutriApp.scrollSubNav(this, 240)" title="I-scroll pakanan (Scroll Right)" aria-label="Scroll Right">›</button>
       </div>
     </nav>
 
     <!-- 3. Administrator Sub-Nav (Shown ONLY for Municipal Health Office) -->
     <nav class="sub-nav" id="mho-sub-nav" style="display: none;">
-      <div class="sub-nav-container">
-        <span class="sub-nav-link active mho-sub-link" data-tab="dashboard">📊 Executive Dashboard</span>
-        <span class="sub-nav-link mho-sub-link" data-tab="announcements">📢 Official Announcements</span>
-        <span class="sub-nav-link mho-sub-link" data-tab="kpis">🎯 10% Stunting Target &amp; KPIs</span>
-        <span class="sub-nav-link mho-sub-link" data-tab="hotspots">🗺️ Barangay Hotspots &amp; Burden</span>
-        <span class="sub-nav-link mho-sub-link" data-tab="reports">📥 Review &amp; Endorse BHW Reports</span>
-        <span class="sub-nav-link mho-sub-link" data-tab="guidelines">📜 WHO &amp; SDG Nutrition Guidelines</span>
+      <div class="sub-nav-wrapper">
+        <button type="button" class="sub-nav-arrow sub-nav-arrow-left" onclick="NutriApp.scrollSubNav(this, -240)" title="I-scroll pakaliwa (Scroll Left)" aria-label="Scroll Left">‹</button>
+        <div class="sub-nav-container">
+          <span class="sub-nav-link active mho-sub-link" data-tab="dashboard">📊 Executive Dashboard</span>
+          <span class="sub-nav-link mho-sub-link" data-tab="announcements">📢 Official Announcements</span>
+          <span class="sub-nav-link mho-sub-link" data-tab="kpis">🎯 10% Stunting Target &amp; KPIs</span>
+          <span class="sub-nav-link mho-sub-link" data-tab="hotspots">🗺️ Barangay Hotspots &amp; Burden</span>
+          <span class="sub-nav-link mho-sub-link" data-tab="reports">📥 Review &amp; Endorse BHW Reports</span>
+          <span class="sub-nav-link mho-sub-link" data-tab="guidelines">📜 WHO &amp; SDG Nutrition Guidelines</span>
+          <span class="sub-nav-link mho-sub-link" data-tab="content">📝 Content Manager</span>
+          <span class="sub-nav-link mho-sub-link" data-tab="users">👥 User Accounts &amp; Access</span>
+          <span class="sub-nav-link mho-sub-link" data-tab="audit">🛡️ Audit &amp; Admin Logs</span>
+        </div>
+        <button type="button" class="sub-nav-arrow sub-nav-arrow-right" onclick="NutriApp.scrollSubNav(this, 240)" title="I-scroll pakanan (Scroll Right)" aria-label="Scroll Right">›</button>
       </div>
     </nav>
 
@@ -1301,6 +1353,27 @@
           </div>
         </div>
 
+        <!-- Tab Pane: Parent Groups & Lesson Assignment (Req #8 & Req #13) -->
+        <div class="chw-tab-pane" data-tab="groups" id="chw-tab-groups" style="display: none;">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title">👥 Community Parent Groups &amp; Lesson Assignment</h2>
+                <p class="card-subtitle">Plan parent cohorts, assign targeted feeding lessons, send tailored guidance,
+                  and track collective progress.</p>
+              </div>
+              <button class="btn btn-primary" onclick="CHWModule.openCreateGroupModal()">
+                + Plan New Parent Group
+              </button>
+            </div>
+
+            <!-- Group Cards Container -->
+            <div id="chw-groups-container">
+              <!-- Dynamically populated by CHWModule.renderGroups() -->
+            </div>
+          </div>
+        </div>
+
         <!-- Tab Pane 2: WHO Growth Calculator -->
         <div class="chw-tab-pane" data-tab="calculator" style="display: none;">
           <div class="card">
@@ -1863,6 +1936,149 @@
             </div>
           </div>
         </div>
+
+        <!-- Tab Pane 5: Nutrition Content Manager (Req #11) -->
+        <div class="mho-tab-pane" data-tab="content" id="mho-tab-content" style="display: none;">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title">📝 Nutrition Education Content Manager</h2>
+                <p class="card-subtitle">Add, modify, update, and maintain parent learning modules, lessons, objectives,
+                  and quizzes.</p>
+              </div>
+              <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                <button class="btn btn-outline btn-sm" onclick="MHODashboard.handleResetModules()"
+                  title="Reset to WHO standard default modules">
+                  🔄 Reset Curricula
+                </button>
+                <button class="btn btn-primary btn-sm" onclick="MHODashboard.openAddModuleModal()">
+                  + Add New Module
+                </button>
+              </div>
+            </div>
+
+            <!-- Modules List Container -->
+            <div id="mho-content-modules-list">
+              <!-- Dynamically populated by MHODashboard.renderContentManagerModules() -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab Pane 6: User Accounts & System Access (Req #12) -->
+        <div class="mho-tab-pane" data-tab="users" id="mho-tab-users" style="display: none;">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title">👥 User Accounts &amp; Access Control</h2>
+                <p class="card-subtitle">Control system users, assign roles (Parents, Health Workers, Data Collectors,
+                  Admins), and manage access status.</p>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="MHODashboard.openAddUserModal()">
+                + Create User Account
+              </button>
+            </div>
+
+            <!-- Filter & Search Toolbar -->
+            <div class="filter-bar" style="margin-bottom: 1rem;">
+              <div class="search-input-wrapper">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="mho-user-search" class="form-control"
+                  placeholder="Search by user name, email, or barangay...">
+              </div>
+
+              <select id="mho-user-role-filter" class="form-select" style="width: auto; min-width: 170px;">
+                <option value="ALL">All Roles</option>
+                <option value="parent">Parents / Caregivers</option>
+                <option value="chw">Health Workers (BHW/BNS)</option>
+                <option value="collector">Field Data Collectors</option>
+                <option value="mho">Administrators (MHO)</option>
+              </select>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>User &amp; Email</th>
+                    <th>Assigned Role</th>
+                    <th>Location / Department</th>
+                    <th>Status</th>
+                    <th>Joined</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="mho-users-tbody">
+                  <!-- Dynamically populated by MHODashboard.renderUsersTable() -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab Pane 7: Audit & Administration Data (Data Requirements #10) -->
+        <div class="mho-tab-pane" data-tab="audit" id="mho-tab-audit" style="display: none;">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title">🛡️ System Activity &amp; Administration Audit Logs</h2>
+                <p class="card-subtitle">Comprehensive accountability trail: account modifications, curriculum updates,
+                  report endorsements, and security actions.</p>
+              </div>
+              <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                <button class="btn btn-outline btn-sm" onclick="NutriExport.exportAuditLogsCSV()"
+                  title="Download complete audit trail as CSV">
+                  📥 Export Logs CSV
+                </button>
+                <button class="btn btn-outline btn-sm" style="color:#DC2626; border-color:#FCA5A5;"
+                  onclick="MHODashboard.handleClearAuditLogs()" title="Clear audit log history">
+                  🗑️ Clear Trail
+                </button>
+              </div>
+            </div>
+
+            <!-- Filter Toolbar -->
+            <div class="filter-bar" style="margin-bottom: 1rem;">
+              <div class="search-input-wrapper">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="mho-audit-search" class="form-control"
+                  placeholder="Search audit logs by action, user, or details...">
+              </div>
+
+              <select id="mho-audit-category-filter" class="form-select" style="width: auto; min-width: 180px;">
+                <option value="ALL">All Categories</option>
+                <option value="Account Management">Account Management</option>
+                <option value="Content & Curricula">Content &amp; Curricula</option>
+                <option value="Report & Endorsement">Report &amp; Endorsement</option>
+                <option value="Group & Instruction">Group &amp; Instruction</option>
+                <option value="Security & Access">Security &amp; Access</option>
+              </select>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>Category</th>
+                    <th>Action Performed</th>
+                    <th>Details / Scope</th>
+                    <th>Performed By</th>
+                    <th>Role</th>
+                  </tr>
+                </thead>
+                <tbody id="mho-audit-tbody">
+                  <!-- Dynamically populated by MHODashboard.renderAuditLogsTable() -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
 
@@ -1983,26 +2199,18 @@
             <div class="form-group">
               <label class="form-label">Email or Username</label>
               <input type="text" name="loginUsername" class="form-control" required
-                placeholder="e.g. maria.parent@nutrilearn.ph" value="maria.parent@nutrilearn.ph">
+                placeholder="e.g. your.email@example.com">
             </div>
 
             <div class="form-group">
               <label class="form-label">Password</label>
-              <input type="password" name="loginPassword" class="form-control" required value="password123">
+              <input type="password" name="loginPassword" class="form-control" required placeholder="••••••••">
             </div>
 
             <button type="submit" class="btn btn-primary"
               style="width: 100%; padding: 0.75rem; font-size: 0.95rem; font-weight: 600; margin-top: 0.5rem;">
               Sign In
             </button>
-
-            <!-- Quick Demo Shortcut -->
-            <div class="auth-demo-box">
-              <button type="button" class="btn btn-outline btn-sm" id="btn-quick-demo-login"
-                onclick="NutriApp.quickDemoLogin()" style="width: 100%; background: #FFFFFF;">
-                Demo Login
-              </button>
-            </div>
           </form>
 
           <!-- SIGN UP FORM -->
@@ -2501,20 +2709,354 @@
     </div>
   </div>
 
+  <!-- ==========================================================================
+       NEW FUNCTIONAL REQUIREMENTS MODALS (Req #1, #8, #11, #12, #14)
+       ========================================================================== -->
+
+  <!-- 1. Account Settings & Profile Self-Management Modal (Req #1) -->
+  <div id="modal-account-settings" class="modal-backdrop">
+    <div class="modal-dialog" style="max-width: 520px;">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">⚙️ My Account &amp; Settings</h2>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+            Manage your personal profile and account credentials
+          </p>
+        </div>
+        <button class="modal-close-btn" onclick="NutriApp.closeModal('modal-account-settings')">&times;</button>
+      </div>
+      <form onsubmit="event.preventDefault(); NutriApp.handleSaveAccountSettings(this);">
+        <div class="modal-body">
+          <div
+            style="display:flex; justify-content:space-between; align-items:center; background:#F8FAFC; padding:0.75rem 1rem; border-radius:8px; margin-bottom:1rem; border:1px solid var(--border-light);">
+            <span style="font-size:0.85rem; font-weight:600; color:var(--text-secondary);">Current Role:</span>
+            <span id="acc-settings-role-badge" class="badge badge-normal" style="font-weight:700;">PARENT</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Full Name: <span style="color: #DC2626;">*</span></label>
+            <input type="text" name="accName" id="acc-settings-name" class="form-control" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email Address: <span style="color: #DC2626;">*</span></label>
+            <input type="email" name="accEmail" id="acc-settings-email" class="form-control" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Password: <span style="color: #DC2626;">*</span></label>
+            <input type="text" name="accPass" id="acc-settings-pass" class="form-control" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Barangay Location:</label>
+            <select name="accBarangay" id="acc-settings-barangay" class="form-select">
+              <option value="Barangay San Jose">Barangay San Jose</option>
+              <option value="Barangay Santa Maria">Barangay Santa Maria</option>
+              <option value="Barangay San Isidro">Barangay San Isidro</option>
+              <option value="Barangay Poblacion">Barangay Poblacion</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline"
+            onclick="NutriApp.closeModal('modal-account-settings')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Profile Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Plan Parent Group Modal (Req #8) -->
+  <div id="modal-create-group" class="modal-backdrop">
+    <div class="modal-dialog" style="max-width: 540px;">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">👥 Plan New Parent Group</h2>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+            Create community parent cohorts for targeted education &amp; progress tracking
+          </p>
+        </div>
+        <button class="modal-close-btn" onclick="NutriApp.closeModal('modal-create-group')">&times;</button>
+      </div>
+      <form onsubmit="event.preventDefault(); CHWModule.handleSaveGroup(this);">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Group / Cohort Name: <span style="color: #DC2626;">*</span></label>
+            <input type="text" name="groupName" class="form-control"
+              placeholder="e.g. San Jose First 1,000 Days Batch 2" required>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Barangay Location: <span style="color: #DC2626;">*</span></label>
+              <select name="groupBarangay" class="form-select">
+                <option value="Barangay San Jose">Barangay San Jose</option>
+                <option value="Barangay Santa Maria">Barangay Santa Maria</option>
+                <option value="Barangay San Isidro">Barangay San Isidro</option>
+                <option value="Barangay Poblacion">Barangay Poblacion</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Target Focus Category: <span style="color: #DC2626;">*</span></label>
+              <input type="text" name="groupCategory" class="form-control"
+                placeholder="e.g. Stunting Prevention / Infant Feeding" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Health Worker / Facilitator: <span style="color: #DC2626;">*</span></label>
+            <input type="text" name="groupFacilitator" class="form-control" value="Sister Teresa Lim, BNS" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Meeting Schedule &amp; Tailored Guidance:</label>
+            <textarea name="groupNotes" class="form-control" rows="3"
+              placeholder="e.g. Bi-weekly Tuesday feeding workshop and growth monitoring at Barangay Hall."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline"
+            onclick="NutriApp.closeModal('modal-create-group')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Parent Group</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. Assign Lessons to Group Modal (Req #8) -->
+  <div id="modal-assign-lessons" class="modal-backdrop">
+    <div class="modal-dialog" style="max-width: 560px;">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">📚 Assign Lessons to Group</h2>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;" id="assign-group-title">
+            Select curriculum modules
+          </p>
+        </div>
+        <button class="modal-close-btn" onclick="NutriApp.closeModal('modal-assign-lessons')">&times;</button>
+      </div>
+      <form onsubmit="event.preventDefault(); CHWModule.handleSaveLessonAssignment(this);">
+        <input type="hidden" id="assign-group-id">
+        <div class="modal-body">
+          <p style="font-size:0.84rem; color:var(--text-secondary); margin-bottom:0.75rem;">
+            Select which nutrition learning modules this cohort of parents should focus on and complete:
+          </p>
+          <div id="assign-modules-checkboxes">
+            <!-- Dynamically populated by CHWModule.openAssignLessonsModal -->
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline"
+            onclick="NutriApp.closeModal('modal-assign-lessons')">Cancel</button>
+          <button type="submit" class="btn btn-accent" style="font-weight:700;">Save Lesson Assignment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. Manage Group Members (Enroll Children) Modal (Req #8) -->
+  <div id="modal-enroll-children" class="modal-backdrop">
+    <div class="modal-dialog" style="max-width: 560px;">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">👶 Manage Group Members</h2>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;" id="enroll-group-title">
+            Enroll parents and children into this cohort
+          </p>
+        </div>
+        <button class="modal-close-btn" onclick="NutriApp.closeModal('modal-enroll-children')">&times;</button>
+      </div>
+      <form onsubmit="event.preventDefault(); CHWModule.handleSaveEnrolledChildren(this);">
+        <input type="hidden" id="enroll-group-id">
+        <div class="modal-body">
+          <p style="font-size:0.84rem; color:var(--text-secondary); margin-bottom:0.75rem;">
+            Check children from the community registry to enroll their families in this cohort:
+          </p>
+          <div id="enroll-children-checkboxes" style="max-height:300px; overflow-y:auto; padding-right:4px;">
+            <!-- Dynamically populated by CHWModule.openEnrollChildrenModal -->
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline"
+            onclick="NutriApp.closeModal('modal-enroll-children')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Enrolled Members</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 5. Send Tailored Advice to Group Modal (Req #8) -->
+  <div id="modal-group-advice" class="modal-backdrop">
+    <div class="modal-dialog" style="max-width: 540px;">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">📢 Send Tailored Advice</h2>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;" id="advice-group-title">
+            Post feeding advice and directives to this group
+          </p>
+        </div>
+        <button class="modal-close-btn" onclick="NutriApp.closeModal('modal-group-advice')">&times;</button>
+      </div>
+      <form onsubmit="event.preventDefault(); CHWModule.handleSendGroupAdvice(this);">
+        <input type="hidden" id="advice-group-id">
+        <input type="hidden" id="advice-group-notes">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Advisory Message / Feeding Guidance: <span
+                style="color: #DC2626;">*</span></label>
+            <textarea name="adviceText" class="form-control" rows="4"
+              placeholder="e.g. Reminder for mothers: Continue adding malunggay leaves to infant porridge once daily. Attend our feeding clinic this Thursday."
+              required></textarea>
+          </div>
+          <p style="font-size:0.78rem; color:var(--text-muted);">
+            💡 This advisory will appear in the group dashboard and automatically post a bulletin for parents in this
+            barangay.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline"
+            onclick="NutriApp.closeModal('modal-group-advice')">Cancel</button>
+          <button type="submit" class="btn btn-accent" style="font-weight:700;">Broadcast Advice →</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 6. Administrator Edit / Add Module Modal (Req #11) -->
+  <div id="modal-edit-module" class="modal-backdrop">
+    <div class="modal-dialog" style="max-width: 680px;">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title" id="modal-edit-module-title">📝 Edit Nutrition Learning Module</h2>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+            Maintain evidence-based curricula, objectives, and feeding content
+          </p>
+        </div>
+        <button class="modal-close-btn" onclick="NutriApp.closeModal('modal-edit-module')">&times;</button>
+      </div>
+      <form onsubmit="event.preventDefault(); MHODashboard.handleSaveModule(this);">
+        <input type="hidden" id="edit-module-id">
+        <div class="modal-body">
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Module Label / Number: <span style="color: #DC2626;">*</span></label>
+              <input type="text" id="edit-module-number" class="form-control" placeholder="e.g. Module 6" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Estimated Duration: <span style="color: #DC2626;">*</span></label>
+              <input type="text" id="edit-module-duration" class="form-control" placeholder="e.g. 15 mins" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Module Title: <span style="color: #DC2626;">*</span></label>
+            <input type="text" id="edit-module-title-input" class="form-control"
+              placeholder="e.g. Safe Food Storage &amp; Preventing Diarrhea" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Summary / Description: <span style="color: #DC2626;">*</span></label>
+            <textarea id="edit-module-summary" class="form-control" rows="2"
+              placeholder="Short description shown on parent curriculum card" required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Learning Objectives (One objective per line):</label>
+            <textarea id="edit-module-objectives" class="form-control" rows="3"
+              placeholder="Understand safe boiling of drinking water&#10;Identify clean food preparation practices"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Detailed Lesson Content (HTML allowed):</label>
+            <textarea id="edit-module-content" class="form-control" rows="5"
+              placeholder="Enter lesson text, paragraphs, and guidance..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline"
+            onclick="NutriApp.closeModal('modal-edit-module')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Module to Curricula</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 7. Administrator Add User Account Modal (Req #12) -->
+  <div id="modal-admin-add-user" class="modal-backdrop">
+    <div class="modal-dialog" style="max-width: 520px;">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">👤 Create User Account</h2>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+            Provision new credentials and assign system access role
+          </p>
+        </div>
+        <button class="modal-close-btn" onclick="NutriApp.closeModal('modal-admin-add-user')">&times;</button>
+      </div>
+      <form onsubmit="event.preventDefault(); MHODashboard.handleCreateUserAdmin(this);">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Full Name: <span style="color: #DC2626;">*</span></label>
+            <input type="text" name="adminUserName" class="form-control" placeholder="e.g. John Santos" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email Address: <span style="color: #DC2626;">*</span></label>
+            <input type="email" name="adminUserEmail" class="form-control" placeholder="e.g. john@nutrilearn.ph"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Initial Password: <span style="color: #DC2626;">*</span></label>
+            <input type="text" name="adminUserPass" class="form-control" placeholder="Enter temporary password" required>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Assigned Role: <span style="color: #DC2626;">*</span></label>
+              <select name="adminUserRole" class="form-select">
+                <option value="parent">Parent / Caregiver</option>
+                <option value="chw">Health Worker (BHW/BNS)</option>
+                <option value="collector">Field Data Collector</option>
+                <option value="mho">Administrator (MHO)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Barangay Assignment:</label>
+              <select name="adminUserBarangay" class="form-select">
+                <option value="Barangay San Jose">Barangay San Jose</option>
+                <option value="Barangay Santa Maria">Barangay Santa Maria</option>
+                <option value="Barangay San Isidro">Barangay San Isidro</option>
+                <option value="Barangay Poblacion">Barangay Poblacion</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline"
+            onclick="NutriApp.closeModal('modal-admin-add-user')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create User Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Scripts -->
-  <script src="js/config.js?v=2.4"></script>
+  <script src="js/config.js?v=3.1"></script>
   <!-- Supabase Official Client Library & NutriLearn Database Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabaseClient.js?v=2.4"></script>
+  <script src="js/supabaseClient.js?v=3.1"></script>
   <!-- Unified FastAPI / Render Backend API Client -->
-  <script src="js/apiClient.js?v=2.4"></script>
-  <script src="js/data.js?v=2.4"></script>
-  <script src="js/exportUtils.js?v=2.4"></script>
-  <script src="js/healthWorker.js?v=2.4"></script>
-  <script src="js/parentLearning.js?v=2.4"></script>
-  <script src="js/mhoDashboard.js?v=2.4"></script>
-  <script src="js/announcements.js?v=2.4"></script>
-  <script src="js/app.js?v=2.4"></script>
+  <script src="js/apiClient.js?v=3.1"></script>
+  <script src="js/data.js?v=3.1"></script>
+  <script src="js/exportUtils.js?v=3.1"></script>
+  <script src="js/healthWorker.js?v=3.1"></script>
+  <script src="js/parentLearning.js?v=3.1"></script>
+  <script src="js/mhoDashboard.js?v=3.1"></script>
+  <script src="js/announcements.js?v=3.1"></script>
+  <script src="js/i18n.js?v=3.1"></script>
+  <script src="js/app.js?v=3.1"></script>
 </body>
 
 </html>

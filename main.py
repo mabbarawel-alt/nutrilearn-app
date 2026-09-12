@@ -53,7 +53,7 @@ def get_local_db() -> Dict[str, Any]:
                 return json.load(f)
         except Exception:
             pass
-    return {"children": [], "monthly_reports": [], "announcements": []}
+    return {"children": [], "monthly_reports": [], "announcements": [], "users": [], "modules": [], "groups": []}
 
 def save_local_db(data: Dict[str, Any]):
     try:
@@ -300,6 +300,75 @@ async def delete_announcement(ann_id: str):
     db["announcements"] = [a for a in db.get("announcements", []) if str(a.get("id")) != str(ann_id)]
     save_local_db(db)
     return {"success": True}
+
+# ------------------------------------------------------------------------------
+# 4. USER ACCOUNTS ENDPOINTS (Req #1, #12)
+# ------------------------------------------------------------------------------
+@app.get("/api/users")
+async def get_users():
+    db = get_local_db()
+    return db.get("users", [])
+
+@app.post("/api/users")
+async def save_user(user: Dict[str, Any]):
+    db = get_local_db()
+    users = db.get("users", [])
+    user_id = user.get("id") or f"usr-{int(Path(__file__).stat().st_mtime * 1000)}"
+    user["id"] = user_id
+    existing_idx = next((i for i, u in enumerate(users) if u.get("id") == user_id), None)
+    if existing_idx is not None:
+        users[existing_idx] = {**users[existing_idx], **user}
+    else:
+        users.append(user)
+    db["users"] = users
+    save_local_db(db)
+    return user
+
+# ------------------------------------------------------------------------------
+# 5. MODULES ENDPOINTS (Req #11)
+# ------------------------------------------------------------------------------
+@app.get("/api/modules")
+async def get_modules():
+    db = get_local_db()
+    return db.get("modules", [])
+
+@app.post("/api/modules")
+async def save_module(mod: Dict[str, Any]):
+    db = get_local_db()
+    modules = db.get("modules", [])
+    mod_id = mod.get("id") or f"mod-{len(modules) + 1}"
+    mod["id"] = mod_id
+    existing_idx = next((i for i, m in enumerate(modules) if m.get("id") == mod_id), None)
+    if existing_idx is not None:
+        modules[existing_idx] = {**modules[existing_idx], **mod}
+    else:
+        modules.append(mod)
+    db["modules"] = modules
+    save_local_db(db)
+    return mod
+
+# ------------------------------------------------------------------------------
+# 6. PARENT GROUPS ENDPOINTS (Req #8)
+# ------------------------------------------------------------------------------
+@app.get("/api/groups")
+async def get_groups():
+    db = get_local_db()
+    return db.get("groups", [])
+
+@app.post("/api/groups")
+async def save_group(grp: Dict[str, Any]):
+    db = get_local_db()
+    groups = db.get("groups", [])
+    grp_id = grp.get("id") or f"grp-{len(groups) + 1}"
+    grp["id"] = grp_id
+    existing_idx = next((i for i, g in enumerate(groups) if g.get("id") == grp_id), None)
+    if existing_idx is not None:
+        groups[existing_idx] = {**groups[existing_idx], **grp}
+    else:
+        groups.append(grp)
+    db["groups"] = groups
+    save_local_db(db)
+    return grp
 
 # ==============================================================================
 # STATIC FILES & SINGLE PAGE APP ROUTING (Render Unified Deploy)
