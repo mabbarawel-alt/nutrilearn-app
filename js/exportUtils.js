@@ -144,19 +144,37 @@ const NutriStorage = {
 
   addChild(child) {
     const children = this.getChildren();
-    child.id = 'ch-' + Date.now();
-    child.lastAssessed = new Date().toISOString().split('T')[0];
+    child.id = child.id || ('ch-' + Date.now());
+    child.lastAssessed = child.lastAssessed || new Date().toISOString().split('T')[0];
     children.unshift(child);
     this.saveChildren(children);
+
+    // Live sync to FastAPI Backend (Render/Local)
+    if (window.NutriApi && window.NutriApi.isAvailable) {
+      window.NutriApi.saveChild(child).catch(e => console.warn('NutriApi save error:', e));
+    }
+    // Live sync to Supabase Cloud
+    if (window.NutriDb && typeof window.NutriDb.saveChild === 'function' && window.NutriDb.isConfigured()) {
+      window.NutriDb.saveChild(child).catch(e => console.warn('Supabase save error:', e));
+    }
     return child;
   },
 
   updateChild(updatedChild) {
     const children = this.getChildren();
-    const index = children.findIndex(c => c.id === updatedChild.id);
+    const index = children.findIndex(c => String(c.id) === String(updatedChild.id));
     if (index !== -1) {
       children[index] = { ...children[index], ...updatedChild, lastAssessed: new Date().toISOString().split('T')[0] };
       this.saveChildren(children);
+
+      // Live sync to FastAPI Backend
+      if (window.NutriApi && window.NutriApi.isAvailable) {
+        window.NutriApi.updateChild(children[index]).catch(e => console.warn('NutriApi update error:', e));
+      }
+      // Live sync to Supabase Cloud
+      if (window.NutriDb && typeof window.NutriDb.updateChild === 'function' && window.NutriDb.isConfigured()) {
+        window.NutriDb.updateChild(children[index]).catch(e => console.warn('Supabase update error:', e));
+      }
       return true;
     }
     return false;
@@ -164,7 +182,7 @@ const NutriStorage = {
 
   deleteChild(childId) {
     let children = this.getChildren();
-    children = children.filter(c => c.id !== childId);
+    children = children.filter(c => String(c.id) !== String(childId));
     this.saveChildren(children);
     return true;
   },
@@ -185,11 +203,20 @@ const NutriStorage = {
 
   submitReport(report) {
     const reports = this.getReports();
-    report.reportId = 'REP-' + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000);
-    report.submittedDate = new Date().toISOString().split('T')[0];
-    report.status = 'Pending Review';
+    report.reportId = report.reportId || ('REP-' + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000));
+    report.submittedDate = report.submittedDate || new Date().toISOString().split('T')[0];
+    report.status = report.status || 'Pending Review';
     reports.unshift(report);
     this.saveReports(reports);
+
+    // Live sync to FastAPI Backend
+    if (window.NutriApi && window.NutriApi.isAvailable) {
+      window.NutriApi.submitReport(report).catch(e => console.warn('NutriApi report submit error:', e));
+    }
+    // Live sync to Supabase Cloud
+    if (window.NutriDb && typeof window.NutriDb.submitReport === 'function' && window.NutriDb.isConfigured()) {
+      window.NutriDb.submitReport(report).catch(e => console.warn('Supabase report submit error:', e));
+    }
     return report;
   },
 
@@ -223,18 +250,77 @@ const NutriStorage = {
 
   addAnnouncement(post) {
     const list = this.getAnnouncements();
-    post.id = 'ann-' + Date.now();
-    post.createdAt = new Date().toISOString();
+    post.id = post.id || ('ann-' + Date.now());
+    post.createdAt = post.createdAt || new Date().toISOString();
     list.unshift(post);
     this.saveAnnouncements(list);
+
+    // Live sync to FastAPI Backend
+    if (window.NutriApi && window.NutriApi.isAvailable) {
+      window.NutriApi.createAnnouncement(post).catch(e => console.warn('NutriApi announcement submit error:', e));
+    }
+    // Live sync to Supabase Cloud
+    if (window.NutriDb && typeof window.NutriDb.createAnnouncement === 'function' && window.NutriDb.isConfigured()) {
+      window.NutriDb.createAnnouncement(post).catch(e => console.warn('Supabase announcement submit error:', e));
+    }
     return post;
   },
 
   deleteAnnouncement(id) {
     let list = this.getAnnouncements();
-    list = list.filter(a => a.id !== id);
+    list = list.filter(a => String(a.id) !== String(id));
     this.saveAnnouncements(list);
+
+    if (window.NutriApi && window.NutriApi.isAvailable) {
+      window.NutriApi.deleteAnnouncement(id).catch(e => console.warn('NutriApi delete announcement error:', e));
+    }
     return true;
+  },
+
+  // Bidirectional Cloud Synchronization
+  async syncWithSupabase() {
+    if (!window.NutriDb || !window.NutriDb.isConfigured()) return;
+
+    try {
+      console.log('🔄 [NutriStorage] Checking live data from Supabase...');
+      const [cloudChildren, cloudReports, cloudAnnouncements] = await Promise.all([
+        window.NutriDb.getChildren(),
+        window.NutriDb.getReports(),
+        window.NutriDb.getAnnouncements()
+      ]);
+
+      let hasNewData = false;
+
+      if (cloudChildren && cloudChildren.length > 0) {
+        this.saveChildren(cloudChildren);
+        hasNewData = true;
+      }
+      if (cloudReports && cloudReports.length > 0) {
+        this.saveReports(cloudReports);
+        hasNewData = true;
+      }
+      if (cloudAnnouncements && cloudAnnouncements.length > 0) {
+        this.saveAnnouncements(cloudAnnouncements);
+        hasNewData = true;
+      }
+
+      if (hasNewData) {
+        if (window.CHWModule && typeof CHWModule.renderRegistryTable === 'function') {
+          CHWModule.renderRegistryTable();
+          CHWModule.updateStatsBar();
+        }
+        if (window.MHODashboard && typeof MHODashboard.init === 'function') {
+          MHODashboard.init();
+        }
+        if (window.AnnouncementsModule && typeof AnnouncementsModule.renderAllFeeds === 'function') {
+          AnnouncementsModule.renderAllFeeds();
+          AnnouncementsModule.renderDashboardWidgets();
+        }
+      }
+      console.log('✅ [NutriStorage] Cloud data synchronized successfully!');
+    } catch (err) {
+      console.warn('⚠️ [NutriStorage] Cloud sync note:', err.message);
+    }
   },
 
   // Strict Audience & Barangay Isolation Filter per Role

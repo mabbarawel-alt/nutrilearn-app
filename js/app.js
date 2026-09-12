@@ -26,6 +26,11 @@ const NutriApp = {
       AnnouncementsModule.init();
     }
 
+    // Sync cloud database with local storage if configured
+    if (typeof NutriStorage.syncWithSupabase === 'function') {
+      NutriStorage.syncWithSupabase();
+    }
+
     // The selection of User Portal and Sign In appears immediately before using the system!
     this.showStartupScreen();
   },

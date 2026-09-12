@@ -40,6 +40,10 @@
       <div class="startup-brand-header">
         <img src="assets/icons/malunggay-logo.png" alt="NutriLearn Logo" class="startup-leaf-logo">
         <h1 class="startup-brand-title">NutriLearn</h1>
+        <div id="startup-db-status" class="db-status-badge" style="margin-top: 0.5rem; display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; padding: 4px 12px; border-radius: 9999px; background: #FEF3C7; color: #92400E; font-weight: 600; border: 1px solid #FDE68A;">
+          <span class="db-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #F59E0B; display: inline-block;"></span>
+          <span id="startup-db-status-text">Database: Connecting...</span>
+        </div>
       </div>
 
       <div class="startup-card">
@@ -325,6 +329,13 @@
 
         <!-- Header Actions: User Profile, Sign Out & Download Hub -->
         <div class="header-actions">
+          <!-- Cloud Database Live Status Indicator -->
+          <div id="header-db-status" class="db-status-badge" title="Live Supabase Cloud Database Status"
+            style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.76rem; padding: 4px 10px; border-radius: 9999px; background: rgba(255, 255, 255, 0.15); color: #FFFFFF; font-weight: 600; border: 1px solid rgba(255, 255, 255, 0.25);">
+            <span class="db-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #F59E0B; display: inline-block;"></span>
+            <span id="header-db-status-text">Cloud DB: Connecting...</span>
+          </div>
+
           <!-- User Profile Badge -->
           <div class="user-profile-badge" id="header-user-btn" onclick="NutriApp.showStartupScreen('role-choice')"
             title="Click to switch account or portal">
@@ -2491,13 +2502,19 @@
   </div>
 
   <!-- Scripts -->
-  <script src="js/data.js?v=2.3"></script>
-  <script src="js/exportUtils.js?v=2.3"></script>
-  <script src="js/healthWorker.js?v=2.3"></script>
-  <script src="js/parentLearning.js?v=2.3"></script>
-  <script src="js/mhoDashboard.js?v=2.3"></script>
-  <script src="js/announcements.js?v=2.3"></script>
-  <script src="js/app.js?v=2.3"></script>
+  <script src="js/config.js?v=2.4"></script>
+  <!-- Supabase Official Client Library & NutriLearn Database Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabaseClient.js?v=2.4"></script>
+  <!-- Unified FastAPI / Render Backend API Client -->
+  <script src="js/apiClient.js?v=2.4"></script>
+  <script src="js/data.js?v=2.4"></script>
+  <script src="js/exportUtils.js?v=2.4"></script>
+  <script src="js/healthWorker.js?v=2.4"></script>
+  <script src="js/parentLearning.js?v=2.4"></script>
+  <script src="js/mhoDashboard.js?v=2.4"></script>
+  <script src="js/announcements.js?v=2.4"></script>
+  <script src="js/app.js?v=2.4"></script>
 </body>
 
 </html>

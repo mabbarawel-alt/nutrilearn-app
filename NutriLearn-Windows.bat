@@ -10,19 +10,31 @@ echo.
 echo Starting NutriLearn Application for Windows...
 echo.
 
-set APP_DIR=%~dp0
-set PORT=8080
+:: Ensure working directory is the NutriLearn project folder
+cd /d "%~dp0"
+set PORT=8085
 
-:: Check if python is available to run local HTTP server for full PWA capabilities
+:: Free up port 8085 if any stale server is lingering
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":%PORT% "') do (
+    taskkill /F /PID %%a >nul 2>&1
+)
+
+:: Check if python is available to run local HTTP server for full PWA and .env capabilities
 where python >nul 2>&1
 if %ERRORLEVEL% equ 0 (
-    echo [OK] Python runtime detected. Starting local background server on port %PORT%...
-    start /B python -m http.server %PORT% --directory "%APP_DIR%" >nul 2>&1
+    python -c "import uvicorn" >nul 2>&1
+    if %ERRORLEVEL% equ 0 (
+        echo [OK] FastAPI Backend runtime ready. Launching full backend on port %PORT%...
+        start /B python -m uvicorn main:app --port %PORT% >nul 2>&1
+    ) else (
+        echo [OK] Python runtime detected. Starting local server on port %PORT%...
+        start /B python -m http.server %PORT% >nul 2>&1
+    )
     timeout /t 1 /nobreak >nul
-    set TARGET_URL=http://localhost:%PORT%
+    set TARGET_URL=http://localhost:%PORT%/index.html
 ) else (
     echo [INFO] Python not in PATH. Launching web app directly...
-    set TARGET_URL=%APP_DIR%index.html
+    set TARGET_URL=index.html
 )
 
 :: Try to launch with Microsoft Edge in app standalone mode
@@ -47,6 +59,6 @@ start "" "%TARGET_URL%"
 
 :done
 echo.
-echo NutriLearn is now running! 
-echo Keep this window open if running the local server, or press any key to close.
+echo NutriLearn is now running at %TARGET_URL%! 
+echo Keep this window open while using the app, or press any key to close.
 pause >nul
